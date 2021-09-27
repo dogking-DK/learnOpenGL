@@ -72,23 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Surface\Source\Repos\C++\cpp_library\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Surface\Source\Repos\C++\cpp_library\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\42173\source\repos\dogking-DK\learnOpenGL\learnOpenGL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\42173\source\repos\dogking-DK\learnOpenGL\learnOpenGL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\Surface\Source\Repos\C++\cpp_library\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Surface\Source\Repos\C++\cpp_library\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\42173\source\repos\dogking-DK\learnOpenGL\learnOpenGL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\42173\source\repos\dogking-DK\learnOpenGL\learnOpenGL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Surface\Source\Repos\C++\cpp_library\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Surface\Source\Repos\C++\cpp_library\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\42173\source\repos\dogking-DK\learnOpenGL\learnOpenGL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\42173\source\repos\dogking-DK\learnOpenGL\learnOpenGL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\Surface\Source\Repos\C++\cpp_library\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Surface\Source\Repos\C++\cpp_library\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\42173\source\repos\dogking-DK\learnOpenGL\learnOpenGL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\42173\source\repos\dogking-DK\learnOpenGL\learnOpenGL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -157,12 +157,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.h" />
     <ClInclude Include="header_collection.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
@@ -170,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\fragment_shader.glsl" />
+    <None Include="shader\light.glsl" />
     <None Include="shader\vertex_shader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

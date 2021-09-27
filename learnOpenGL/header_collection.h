@@ -5,6 +5,7 @@
 #include <iostream>
 #include "window.h"
 #include "shader.h"
+#include "camera.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"									// 读取图片的库
 // 线性代数相关的数学库

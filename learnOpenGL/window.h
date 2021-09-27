@@ -8,13 +8,13 @@ inline void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 // 处理输入
-inline void processInput(GLFWwindow *window)
-{
-	// 如果按下Esc键，关闭窗口
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-		glfwSetWindowShouldClose(window, true);
-	}
-}
+//inline void processInput(GLFWwindow *window)
+//{
+//	// 如果按下Esc键，关闭窗口
+//	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+//	{
+//		glfwSetWindowShouldClose(window, true);
+//	}
+//}
 
 #endif

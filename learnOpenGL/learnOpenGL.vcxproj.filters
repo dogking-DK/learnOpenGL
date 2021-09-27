@@ -28,6 +28,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="glad.c">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,12 +47,18 @@
     <ClInclude Include="stb_image.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\fragment_shader.glsl">
       <Filter>shader</Filter>
     </None>
     <None Include="shader\vertex_shader.glsl">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\light.glsl">
       <Filter>shader</Filter>
     </None>
   </ItemGroup>
