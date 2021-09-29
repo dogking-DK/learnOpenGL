@@ -175,6 +175,14 @@
     <None Include="shader\light.glsl" />
     <None Include="shader\vertex_shader.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="texture\awesomeface.png" />
+    <Image Include="texture\container.jpg" />
+    <Image Include="texture\container2.png" />
+    <Image Include="texture\old.jpg" />
+    <Image Include="texture\QQ图片20210909220948.png" />
+    <Image Include="texture\stain.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

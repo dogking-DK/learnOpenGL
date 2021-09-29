@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
 	glEnableVertexAttribArray(0);
 
 	// --------------------------------------------------------
-	/*
+	
 	unsigned int texture1, texture2;
 	glGenTextures(1, &texture1);
 	glBindTexture(GL_TEXTURE_2D, texture1);
@@ -173,35 +173,8 @@ int main(int argc, char* argv[])
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load("texture/container.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load("texture/container2.png", &width, &height, &nrChannels, 0);
 	cout << width << "||" << height << "||" << nrChannels << endl;
-	if (data)
-	{
-		// 获得贴图
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		// 为贴图生成mipmap
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture\n";
-	}
-	stbi_image_free(data);
-
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-
-	// 设置贴图在s（即x轴水平方向上）重复
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	// 设置贴图在t（即y轴垂直方向上）重复
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// 设置贴图在放大缩小时如何采样，LINEAR->线性插值 NEAREST->选择最近像素
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	stbi_set_flip_vertically_on_load(true);
-	data = stbi_load("texture/awesomeface.png", &width, &height, &nrChannels, 0);
-	stbi_set_flip_vertically_on_load(false);
-	//cout << width << "||" << height << "||" << nrChannels << endl;
 	if (data)
 	{
 		// 获得贴图
@@ -214,7 +187,7 @@ int main(int argc, char* argv[])
 		std::cout << "Failed to load texture\n";
 	}
 	stbi_image_free(data);
-	*/
+	
 	// --------------------------------------------------------
 
 	glm::mat4 trans = glm::mat4(1.0f);
@@ -231,7 +204,7 @@ int main(int argc, char* argv[])
 	ourShader.setVec3f("object_color", glm::vec3(1.0f, 0.5f, 0.31f));
 	ourShader.setVec3f("light_color", glm::vec3(1.0f, 1.0f, 1.0f));
 	ourShader.setVec3f("light_pos", light_pos);
-
+	
 	
 	
 	// 位移矩阵
@@ -254,9 +227,20 @@ int main(int argc, char* argv[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+		glm::vec3 light_vec = glm::vec3(1.0f);
+		//light_vec.x = sin(glfwGetTime() * 2.0f) + 0.5;
+		//light_vec.y = sin(glfwGetTime() * 0.7f) + 0.5;
+		//light_vec.z = sin(glfwGetTime() * 1.3f) + 0.5;
+		light_vec.x = 1.0f;
+		light_vec.y = 1.0f;
+		light_vec.z = 1.0f;
+		glm::vec3 diffuseColor = light_vec * glm::vec3(0.5f); // decrease the influence
+		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
+		glm::vec3 specularColor = glm::vec3(1.0f, 1.0f, 1.0f); // low influence
+		
 		lightShader.use();
 		model = glm::mat4(1.0);
-		model = glm::rotate(model, glm::radians(static_cast<float>(glfwGetTime() * 100.0)), glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
+		//model = glm::rotate(model, glm::radians(static_cast<float>(glfwGetTime() * 100.0)), glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
 		model = glm::translate(model, light_pos);
 		glm::mat4 temp = model;
 		model = glm::scale(model, glm::vec3(0.2f));
@@ -264,12 +248,20 @@ int main(int argc, char* argv[])
 		lightShader.setMat4f("model", model);
 		lightShader.setMat4f("view", cam.view());
 		lightShader.setMat4f("projection", projection);
+		lightShader.setVec3f("light.ambient", diffuseColor);
+		lightShader.setVec3f("light.diffuse", ambientColor);
+		lightShader.setVec3f("light.spectral", specularColor);
 		glBindVertexArray(light_VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
 		
 		glBindVertexArray(VAO);
 		ourShader.use();
-		ourShader.setVec3f("light_pos", glm::vec3(temp * glm::vec4(light_pos, 0.0f)));
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+
+		ourShader.setVec3f("light.position", glm::vec3(temp * glm::vec4(light_pos, 0.0f)));
 		model = glm::mat4(1.0f);
 		projection = glm::perspective(glm::radians(fov), static_cast<float>(screen_width) / static_cast<float>(screen_height), 0.1f, 100.0f);
 		ourShader.setMat4f("transform", trans);
@@ -291,6 +283,16 @@ int main(int argc, char* argv[])
 		ourShader.setMat4f("view", cam.view());
 		ourShader.setMat4f("projection", projection);
 		ourShader.setVec3f("cam_pos", cam.position());
+
+		ourShader.setVec3f("light.ambient", ambientColor);
+		ourShader.setVec3f("light.diffuse", diffuseColor);
+		ourShader.setVec3f("light.specular", specularColor);
+
+
+		ourShader.setVec3f("material.ambient", 1.0f, 0.5f, 0.31f);
+		ourShader.setVec3f("material.diffuse", 1.0f, 0.5f, 0.31f);
+		ourShader.setVec3f("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
+		ourShader.setFloat("material.shininess", 32.0f);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		

@@ -62,4 +62,24 @@
       <Filter>shader</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="texture\stain.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="texture\QQ图片20210909220948.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="texture\awesomeface.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="texture\container.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="texture\container2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="texture\old.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>
