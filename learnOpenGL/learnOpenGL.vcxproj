@@ -168,6 +168,7 @@
     <ClInclude Include="header_collection.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="texture.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -179,8 +180,9 @@
     <Image Include="texture\awesomeface.png" />
     <Image Include="texture\container.jpg" />
     <Image Include="texture\container2.png" />
+    <Image Include="texture\container_spec.png" />
+    <Image Include="texture\matrix.jpg" />
     <Image Include="texture\old.jpg" />
-    <Image Include="texture\QQ图片20210909220948.png" />
     <Image Include="texture\stain.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

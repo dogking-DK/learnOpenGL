@@ -16,6 +16,9 @@
     <Filter Include="shader">
       <UniqueIdentifier>{192f4127-46c2-47ba-9046-534d148c3381}</UniqueIdentifier>
     </Filter>
+    <Filter Include="texture">
+      <UniqueIdentifier>{d868a1c8-4ca8-48f8-b458-1014528a7dac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -50,6 +53,9 @@
     <ClInclude Include="camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\fragment_shader.glsl">
@@ -63,23 +69,26 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="texture\stain.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="texture\QQ图片20210909220948.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="texture\awesomeface.png">
-      <Filter>Resource Files</Filter>
+      <Filter>texture</Filter>
     </Image>
     <Image Include="texture\container.jpg">
-      <Filter>Resource Files</Filter>
+      <Filter>texture</Filter>
     </Image>
     <Image Include="texture\container2.png">
-      <Filter>Resource Files</Filter>
+      <Filter>texture</Filter>
     </Image>
     <Image Include="texture\old.jpg">
-      <Filter>Resource Files</Filter>
+      <Filter>texture</Filter>
+    </Image>
+    <Image Include="texture\stain.png">
+      <Filter>texture</Filter>
+    </Image>
+    <Image Include="texture\matrix.jpg">
+      <Filter>texture</Filter>
+    </Image>
+    <Image Include="texture\container_spec.png">
+      <Filter>texture</Filter>
     </Image>
   </ItemGroup>
 </Project>

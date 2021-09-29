@@ -127,6 +127,5 @@ void shader::setVec3f(const std::string& name, const glm::vec3& value) const
 
 void shader::setVec3f(const std::string& name, const float x, const float y, const float z) const
 {
-	
 	glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(glm::vec3(x, y, z)));
 }

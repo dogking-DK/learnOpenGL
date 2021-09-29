@@ -9,7 +9,7 @@ camera::camera(const glm::vec3& pos, const glm::vec3& direct, const glm::vec3& u
 
 glm::mat4 camera::view() const
 {
-	return glm::lookAt(camera_position,  camera_position + camera_direction, camera_up);
+	return glm::lookAt(camera_position, camera_position + camera_direction, camera_up);
 }
 
 void camera::process_cursor_motion(float x_offset, float y_offset)
@@ -31,7 +31,7 @@ void camera::process_cursor_motion(float x_offset, float y_offset)
 	direction.y = sin(glm::radians(pitch));
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	camera_direction = glm::normalize(direction);
-	
+
 	direction.x = -cos(glm::radians(yaw)) * sin(glm::radians(pitch));
 	direction.y = cos(glm::radians(pitch));
 	direction.z = -sin(glm::radians(yaw)) * sin(glm::radians(pitch));
