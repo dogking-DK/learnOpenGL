@@ -25,10 +25,19 @@ inline unsigned int load_texture(const char* name)
 	unsigned char* data = stbi_load(name, &width, &height, &nrChannels, 0);
 	if (data)
 	{
-		// 获得贴图
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		// 为贴图生成mipmap
-		glGenerateMipmap(GL_TEXTURE_2D);
+		if (nrChannels == 4)							// RGBA类型
+		{
+			// 获得贴图
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			// 为贴图生成mipmap
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else if (nrChannels == 3)						// RGB类型
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		
 	}
 	else
 	{

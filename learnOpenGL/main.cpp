@@ -51,7 +51,18 @@ float vertices[] = {
 	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
 	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 };
-
+glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+};
 // 屏幕的宽高
 const unsigned int screen_width = 800;
 const unsigned int screen_height = 600;
@@ -163,9 +174,10 @@ int main(int argc, char* argv[])
 
 	// --------------------------------------------------------
 	
-	unsigned int texture1, texture2;
+	unsigned int texture1, texture2, texture3;
 	texture1 = load_texture("texture/container2.png");
 	texture2 = load_texture("texture/container_spec.png");
+	texture3 = load_texture("texture/matrix.jpg");
 	//glGenTextures(1, &texture1);
 	//glBindTexture(GL_TEXTURE_2D, texture1);
 
@@ -211,6 +223,7 @@ int main(int argc, char* argv[])
 	ourShader.setVec3f("light_pos", light_pos);
 	ourShader.setInt("material.diffuse", 0);
 	ourShader.setInt("material.specular", 1);
+	ourShader.setInt("emission", 2);
 	
 	
 	
@@ -230,7 +243,7 @@ int main(int argc, char* argv[])
 
 		// 进行渲染更新
 		
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -265,10 +278,13 @@ int main(int argc, char* argv[])
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, texture3);
 		glBindVertexArray(VAO);
 		ourShader.use();
 
 		ourShader.setVec3f("light.position", glm::vec3(temp * glm::vec4(light_pos, 0.0f)));
+		ourShader.setVec3f("light.direction", glm::vec3(-1.0, 1.0, -1.0));
 		model = glm::mat4(1.0f);
 		projection = glm::perspective(glm::radians(fov), static_cast<float>(screen_width) / static_cast<float>(screen_height), 0.1f, 100.0f);
 		ourShader.setMat4f("transform", trans);
@@ -295,12 +311,29 @@ int main(int argc, char* argv[])
 		ourShader.setVec3f("light.diffuse", diffuseColor);
 		ourShader.setVec3f("light.specular", specularColor);
 
-
+		ourShader.setFloat("light.constant", 1.0f);
+		ourShader.setFloat("light.linear", 0.045f);
+		ourShader.setFloat("light.quadratic", 0.0075f);
+		
 		//ourShader.setVec3f("material.ambient", 1.0f, 0.5f, 0.31f);
 		ourShader.setVec3f("material.diffuse", 1.0f, 0.5f, 0.31f);
 		//ourShader.setVec3f("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
 		ourShader.setFloat("material.shininess", 32.0f);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			// calculate the model matrix for each object and pass it to shader before drawing
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			ourShader.setMat4f("model", model);
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
+		
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		
 		
