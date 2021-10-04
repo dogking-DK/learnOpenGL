@@ -1,5 +1,6 @@
 
 #include "header_collection.h"
+#include "include/glad/glad.h"
 // 是否使用线框渲染模式
 //#define __USE_LINE_MODE__
 
