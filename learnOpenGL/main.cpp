@@ -134,10 +134,13 @@ int main(int argc, char* argv[])
 
 	// --------------------------------------------------------------
 	cout << "link basic shader...\n";
-	shader ourShader("shader/vertex_shader.glsl", "shader/fragment_shader.glsl");
+	Shader ourShader("shader/vertex_shader.glsl", "shader/fragment_shader.glsl");
 	cout << "link done\n";
 	cout << "link light shader...\n";
-	shader lightShader("shader/vertex_shader.glsl", "shader/light.glsl");
+	Shader lightShader("shader/vertex_shader.glsl", "shader/light.glsl");
+	cout << "link done\n";
+	cout << "link temp shader...\n";
+	Shader tempShader("shader/model_vs.glsl", "shader/model_fs.glsl");
 	cout << "link done\n";
 	// ---------------------------------------------------------------
 	// 设置顶点调用数组（vertex array object）
@@ -179,32 +182,7 @@ int main(int argc, char* argv[])
 	texture1 = load_texture("texture/container2.png");
 	texture2 = load_texture("texture/container_spec.png");
 	texture3 = load_texture("texture/matrix.jpg");
-	//glGenTextures(1, &texture1);
-	//glBindTexture(GL_TEXTURE_2D, texture1);
 
-	//// 设置贴图在s（即x轴水平方向上）重复
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	//// 设置贴图在t（即y轴垂直方向上）重复
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//// 设置贴图在放大缩小时如何采样，LINEAR->线性插值 NEAREST->选择最近像素
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	//int width, height, nrChannels;
-	//unsigned char* data = stbi_load("texture/container2.png", &width, &height, &nrChannels, 0);
-	//cout << width << "||" << height << "||" << nrChannels << endl;
-	//if (data)
-	//{
-	//	// 获得贴图
-	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	//	// 为贴图生成mipmap
-	//	glGenerateMipmap(GL_TEXTURE_2D);
-	//}
-	//else
-	//{
-	//	std::cout << "Failed to load texture\n";
-	//}
-	//stbi_image_free(data);
 	
 	// --------------------------------------------------------
 
@@ -226,7 +204,10 @@ int main(int argc, char* argv[])
 	ourShader.setInt("material.specular", 1);
 	ourShader.setInt("emission", 2);
 	
-	
+
+	//Model temp_model("model/pack/backpack.obj");
+	Model temp_model("model/backpack/Survival_BackPack_2.fbx");
+
 	
 	// 位移矩阵
 	glm::mat4 model = glm::mat4(1.0f);
@@ -330,13 +311,17 @@ int main(int argc, char* argv[])
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			ourShader.setMat4f("model", model);
 
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			//glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
+		tempShader.use();
+		tempShader.setMat4f("model", model);
+		tempShader.setMat4f("view", cam.view());
+		tempShader.setMat4f("projection", projection);
+		tempShader.setVec3f("cam_pos", light_pos);
 
-		
+		temp_model.draw(tempShader);
+
 		
 		// 更新画面，处理事件	
 		glfwSwapBuffers(window);

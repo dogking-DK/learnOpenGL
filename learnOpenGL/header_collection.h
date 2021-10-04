@@ -4,9 +4,11 @@
 #include <GLFW/glfw3.h>									// 图形界面库
 #include <iostream>
 #include "window.h"
-#include "shader.h"
+#include "Shader.h"
 #include "camera.h"
 #include "texture.h"
+#include "Model.h"
+#include "Mesh.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"									// 读取图片的库
 // 线性代数相关的数学库

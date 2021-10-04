@@ -1,6 +1,6 @@
-#include "shader.h"
+#include "Shader.h"
 
-shader::shader(const char* vertex_path, const char* fragment_path)
+Shader::Shader(const char* vertex_path, const char* fragment_path)
 {
 	std::string vertex_code;
 	std::string fragment_code;
@@ -90,42 +90,42 @@ shader::shader(const char* vertex_path, const char* fragment_path)
 	glDeleteShader(fragment_shader);
 }
 
-void shader::use()
+void Shader::use()
 {
 	glUseProgram(ID);
 }
 
-void shader::setBool(const std::string& name, bool value) const
+void Shader::setBool(const std::string& name, bool value) const
 {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), static_cast<int>(value));
 }
 
-void shader::setInt(const std::string& name, int value) const
+void Shader::setInt(const std::string& name, int value) const
 {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-void shader::setFloat(const std::string& name, float value) const
+void Shader::setFloat(const std::string& name, float value) const
 {
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-void shader::setMat4f(const std::string& name, const glm::mat4& value) const
+void Shader::setMat4f(const std::string& name, const glm::mat4& value) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &value[0][0]);
 }
 
-void shader::setMat3f(const std::string& name, const glm::mat3& value) const
+void Shader::setMat3f(const std::string& name, const glm::mat3& value) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &value[0][0]);
 }
 
-void shader::setVec3f(const std::string& name, const glm::vec3& value) const
+void Shader::setVec3f(const std::string& name, const glm::vec3& value) const
 {
 	glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(value));
 }
 
-void shader::setVec3f(const std::string& name, const float x, const float y, const float z) const
+void Shader::setVec3f(const std::string& name, const float x, const float y, const float z) const
 {
 	glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(glm::vec3(x, y, z)));
 }

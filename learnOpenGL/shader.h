@@ -9,13 +9,13 @@
 #include <sstream>
 #include <iostream>
 
-class shader
+class Shader
 {
 public:
 	// program的ID
 	unsigned int ID;
 	// 读取顶点和片元着色器的构造器
-	shader(const char* vertex_path, const char* fragment_path);
+	Shader(const char* vertex_path, const char* fragment_path);
 
 	// 启动program
 	void use();

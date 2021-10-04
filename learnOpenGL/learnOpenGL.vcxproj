@@ -160,18 +160,24 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="shader.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="header_collection.h" />
-    <ClInclude Include="shader.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shader\model_fs.glsl" />
+    <None Include="shader\model_vs.glsl" />
     <None Include="shader\fragment_shader.glsl" />
     <None Include="shader\light.glsl" />
     <None Include="shader\vertex_shader.glsl" />
