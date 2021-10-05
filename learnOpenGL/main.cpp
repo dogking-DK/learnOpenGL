@@ -2,68 +2,13 @@
 #include "header_collection.h"
 #include "include/glad/glad.h"
 // 是否使用线框渲染模式
-//#define __USE_LINE_MODE__
+#define __USE_LINE_MODE__
 
 using std::cout;			using std::endl;
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double x_pos, double y_pos);
 void scroll_callback(GLFWwindow* window, double x_offset, double y_offset);
-float vertices[] = {
-	// positions          // normals           // texture coords
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
 
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
-};
-glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-};
 // 屏幕的宽高
 const unsigned int screen_width = 800;
 const unsigned int screen_height = 600;
@@ -133,53 +78,15 @@ int main(int argc, char* argv[])
 	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 
 	// --------------------------------------------------------------
-	cout << "link basic shader...\n";
-	Shader ourShader("shader/vertex_shader.glsl", "shader/fragment_shader.glsl");
-	cout << "link done\n";
 	cout << "link light shader...\n";
 	Shader lightShader("shader/vertex_shader.glsl", "shader/light.glsl");
 	cout << "link done\n";
 	cout << "link temp shader...\n";
 	Shader tempShader("shader/model_vs.glsl", "shader/model_fs.glsl");
 	cout << "link done\n";
-	// ---------------------------------------------------------------
-	// 设置顶点调用数组（vertex array object）
-	glGenVertexArrays(1, &VAO);
-	// 绑定VA
-	glBindVertexArray(VAO);
-
-	
-	// 设置顶点缓存（vertex buffer object）
-	glGenBuffers(1, &VBO);
-	// 绑定VB
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// 读取VB需要缓存的数据
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	// 设置顶点索引缓存
-	//glGenBuffers(1, &EBO);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	
-	// 设置VA指向BV的方式细节
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(0));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-	// 设置可以获取VA的信息
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-
-	glGenVertexArrays(1, &light_VAO);
-	glBindVertexArray(light_VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(0));
-	glEnableVertexAttribArray(0);
-
-	// --------------------------------------------------------
 	
 	unsigned int texture1, texture2, texture3;
-	texture1 = load_texture("texture/container2.png");
+	texture1 = load_texture("model/pack/diffuse.jpg");
 	texture2 = load_texture("texture/container_spec.png");
 	texture3 = load_texture("texture/matrix.jpg");
 
@@ -195,18 +102,8 @@ int main(int argc, char* argv[])
 
 	glEnable(GL_DEPTH_TEST);
 	
-	ourShader.use();
-	ourShader.setFloat("vis_degree", vis_degree);
-	ourShader.setVec3f("object_color", glm::vec3(1.0f, 0.5f, 0.31f));
-	ourShader.setVec3f("light_color", glm::vec3(1.0f, 1.0f, 1.0f));
-	ourShader.setVec3f("light_pos", light_pos);
-	ourShader.setInt("material.diffuse", 0);
-	ourShader.setInt("material.specular", 1);
-	ourShader.setInt("emission", 2);
-	
-
 	//Model temp_model("model/pack/backpack.obj");
-	Model temp_model("model/backpack/Survival_BackPack_2.fbx");
+	Model temp_model("model/handgun/Handgun_obj.obj");
 
 	
 	// 位移矩阵
@@ -263,14 +160,9 @@ int main(int argc, char* argv[])
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, texture3);
 		glBindVertexArray(VAO);
-		ourShader.use();
 
-		ourShader.setVec3f("light.position", glm::vec3(temp * glm::vec4(light_pos, 0.0f)));
-		ourShader.setVec3f("light.direction", glm::vec3(-1.0, 1.0, -1.0));
 		model = glm::mat4(1.0f);
 		projection = glm::perspective(glm::radians(fov), static_cast<float>(screen_width) / static_cast<float>(screen_height), 0.1f, 100.0f);
-		ourShader.setMat4f("transform", trans);
-		ourShader.setMat4f("model", model);
 		glm::mat3 normal_model = glm::mat3(glm::transpose(glm::inverse(model)));
 		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
 		{
@@ -283,35 +175,6 @@ int main(int argc, char* argv[])
 				}
 				cout << endl;
 			}
-		}
-		ourShader.setMat3f("normal_model", glm::mat3(model));
-		ourShader.setMat4f("view", cam.view());
-		ourShader.setMat4f("projection", projection);
-		ourShader.setVec3f("cam_pos", cam.position());
-
-		ourShader.setVec3f("light.ambient", ambientColor);
-		ourShader.setVec3f("light.diffuse", diffuseColor);
-		ourShader.setVec3f("light.specular", specularColor);
-
-		ourShader.setFloat("light.constant", 1.0f);
-		ourShader.setFloat("light.linear", 0.045f);
-		ourShader.setFloat("light.quadratic", 0.0075f);
-		
-		//ourShader.setVec3f("material.ambient", 1.0f, 0.5f, 0.31f);
-		ourShader.setVec3f("material.diffuse", 1.0f, 0.5f, 0.31f);
-		//ourShader.setVec3f("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
-		ourShader.setFloat("material.shininess", 32.0f);
-
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			// calculate the model matrix for each object and pass it to shader before drawing
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 20.0f * i;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			ourShader.setMat4f("model", model);
-
-			//glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
 		tempShader.use();
@@ -327,8 +190,6 @@ int main(int argc, char* argv[])
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		
-		ourShader.setFloat("vis_degree", vis_degree);
-
 		// 测量FPS
 		last_time = second_end;
 		second_end = glfwGetTime();
@@ -345,7 +206,6 @@ int main(int argc, char* argv[])
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteVertexArrays(1, &light_VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteProgram(ourShader.ID);
 	glDeleteProgram(lightShader.ID);
 	
 	// 终止窗口

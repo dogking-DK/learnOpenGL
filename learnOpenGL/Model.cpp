@@ -37,6 +37,7 @@ void Model::load_model(std::string path)
 	std::cout << "process the node\n\n";
 
 	process_node(scene->mRootNode, scene);
+	std::cout << "-------------------total info-------------------\n";
 	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
 	{
 		std::cout << scene->mMaterials[i]->GetName().C_Str() << std::endl;
@@ -46,19 +47,20 @@ void Model::load_model(std::string path)
 		std::cout << scene->mTextures[i]->mFilename.C_Str() << std::endl;
 	}
 	std::cout << "the texture has been loaded:" << texture_loaded.size() << std::endl;
-	for (unsigned int i = 0; i < texture_loaded.size(); ++i)
-	{
-		std::cout << texture_loaded[i].path << std::endl;
-	}
+	std::cout << "-------------------total info-------------------\n";
 
 	std::cout << "-------------------model info-------------------\n";
 	std::cout << "mesh number: " << this->meshes.size() << std::endl;
 	for (unsigned int i = 0; i < meshes.size(); ++i)
 	{
-		std::cout << "mesh" << i << std::endl;
-		std::cout << "mesh vertex: " << this->meshes[i].vertices.size() << std::endl;
-		std::cout << "mesh indices: " << this->meshes[i].indices.size() << std::endl;
+		std::cout << "mesh" << i << " ";
+		std::cout << "mesh vertex: " << this->meshes[i].vertices.size() << " ";
+		std::cout << "mesh indices: " << this->meshes[i].indices.size() << " ";
 		std::cout << "mesh textures: " << this->meshes[i].textures.size() << std::endl;
+		for (unsigned int j = 0; j < meshes[i].textures.size(); ++j)
+		{
+			std::cout << meshes[i].textures[j].id << " " << meshes[i].textures[j].path << " " << meshes[i].textures[j].type << std::endl;
+		}
 	}
 	std::cout << "-------------------model info-------------------\n";
 
@@ -127,13 +129,13 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 			indices.push_back(face.mIndices[j]);
 	}
 	// 获得贴图和高光贴图
-	std::cout << "loading texture in one mesh...\n";
+	//std::cout << "loading texture in one mesh...\n";
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 	std::vector<Texture> diffuse_maps = load_material_texture(material, aiTextureType_DIFFUSE, "texture_diffuse");
 	textures.insert(textures.end(), diffuse_maps.begin(), diffuse_maps.end());
 	std::vector<Texture> specular_maps = load_material_texture(material, aiTextureType_SPECULAR, "texture_specular");
 	textures.insert(textures.end(), specular_maps.begin(), specular_maps.end());
-	std::cout << "loading texture in one mesh done\n";
+	//std::cout << "loading texture in one mesh done\n";
 	
 
 	return Mesh(vertices, indices, textures);
@@ -146,15 +148,15 @@ std::vector<Texture> Model::load_material_texture(aiMaterial* material, aiTextur
 	{
 		aiString str;
 		material->GetTexture(type, i, &str);
-		std::cout << "texture name:" << str.C_Str() << std::endl;
+		//std::cout << "texture name:" << str.C_Str() << std::endl;
 
 		bool skip = false;
 		// 检查该贴图是否已经读取
 		for (unsigned int j = 0; j < texture_loaded.size(); ++j)
 		{
-			if (std::strcmp(str.C_Str(), texture_loaded[i].path.data()) == 0)
+			if (std::strcmp(str.C_Str(), texture_loaded[j].path.data()) == 0)
 			{
-				textures.push_back(texture_loaded[i]);
+				textures.push_back(texture_loaded[j]);
 				skip = true;
 				break;
 			}
@@ -164,7 +166,7 @@ std::vector<Texture> Model::load_material_texture(aiMaterial* material, aiTextur
 		{
 			Texture texture;
 			std::cout << "texture name:" << str.C_Str() << std::endl;
-			texture.id = load_texture(str.C_Str());
+			texture.id = load_texture(str.C_Str(), directory.c_str());
 			texture.type = type_name;
 			texture.path = str.C_Str();
 			textures.push_back(texture);
