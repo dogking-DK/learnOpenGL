@@ -85,6 +85,9 @@
     <None Include="shader\model_fs.glsl">
       <Filter>shader</Filter>
     </None>
+    <None Include="shader\shader_single_color.fs">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="texture\awesomeface.png">

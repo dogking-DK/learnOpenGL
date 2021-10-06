@@ -180,6 +180,7 @@
     <None Include="shader\model_vs.glsl" />
     <None Include="shader\fragment_shader.glsl" />
     <None Include="shader\light.glsl" />
+    <None Include="shader\shader_single_color.fs" />
     <None Include="shader\vertex_shader.glsl" />
   </ItemGroup>
   <ItemGroup>

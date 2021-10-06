@@ -2,12 +2,13 @@
 #include "header_collection.h"
 #include "include/glad/glad.h"
 // 是否使用线框渲染模式
-#define __USE_LINE_MODE__
+//#define __USE_LINE_MODE__
 
 using std::cout;			using std::endl;
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double x_pos, double y_pos);
 void scroll_callback(GLFWwindow* window, double x_offset, double y_offset);
+GLFWwindow* init();
 
 // 屏幕的宽高
 const unsigned int screen_width = 800;
@@ -39,43 +40,11 @@ camera cam;
 
 int main(int argc, char* argv[])
 {
-	// 初始化glfw
-	glfwInit();
-	// 设置使用的OpenGL最大最小版本都为3，也就是只是用3.X的版本
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// 设置使用core model
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	// 创建窗口
-	GLFWwindow* window = glfwCreateWindow(screen_width, screen_height, "learnOpenGL", nullptr, nullptr);
-	// 检查窗口是否创建成功
+	GLFWwindow* window = init();
 	if (window == nullptr)
 	{
-		cout << "fail to create window with glfw\n";
-		glfwTerminate();
 		return -1;
 	}
-	// 将此窗口设置为当前状态（当前的渲染显示目标）
-	glfwMakeContextCurrent(window);
-	// 设置画面resize时调用的函数
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	// 设置在窗口中隐藏光标
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	// 设置滚轮
-	glfwSetScrollCallback(window, scroll_callback);
-	// 设置使用的光标参数处理函数
-	glfwSetCursorPosCallback(window, mouse_callback);
-	// 让GLAD获取本机的OpenGL信息并初始化
-	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
-	{
-		cout << "Failed to initialize GLAD\n";
-		return -1;
-	}
-	
-	
-	int nrAttributes;
-	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 
 	// --------------------------------------------------------------
 	cout << "link light shader...\n";
@@ -95,15 +64,10 @@ int main(int argc, char* argv[])
 
 	glm::mat4 trans = glm::mat4(1.0f);
 
-	// 设置渲染模式为线框模式
-#ifdef __USE_LINE_MODE__
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-#endif
 
-	glEnable(GL_DEPTH_TEST);
 	
 	//Model temp_model("model/pack/backpack.obj");
-	Model temp_model("model/handgun/Handgun_obj.obj");
+	Model temp_model("model/pack/backpack.obj");
 
 	
 	// 位移矩阵
@@ -123,13 +87,10 @@ int main(int argc, char* argv[])
 		// 进行渲染更新
 		
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 
 		glm::vec3 light_vec = glm::vec3(1.0f);
-		//light_vec.x = sin(glfwGetTime() * 2.0f) + 0.5;
-		//light_vec.y = sin(glfwGetTime() * 0.7f) + 0.5;
-		//light_vec.z = sin(glfwGetTime() * 1.3f) + 0.5;
 		light_vec.x = 1.0f;
 		light_vec.y = 1.0f;
 		light_vec.z = 1.0f;
@@ -264,4 +225,94 @@ void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
 		fov = 1.0f;
 	if (fov > 60.0f)
 		fov = 60.0f;
+}
+
+GLFWwindow* init()
+{
+	// 初始化glfw
+	glfwInit();
+	// 设置使用的OpenGL最大最小版本都为3，也就是只是用3.X的版本
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	// 设置使用core model
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	// 创建窗口
+	GLFWwindow* window = glfwCreateWindow(screen_width, screen_height, "learnOpenGL", nullptr, nullptr);
+	// 检查窗口是否创建成功
+	if (window == nullptr)
+	{
+		cout << "fail to create window with glfw\n";
+		glfwTerminate();
+		return nullptr;
+	}
+	// 将此窗口设置为当前状态（当前的渲染显示目标）
+	glfwMakeContextCurrent(window);
+	// 设置画面resize时调用的函数
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	// 设置在窗口中隐藏光标
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// 设置滚轮
+	glfwSetScrollCallback(window, scroll_callback);
+	// 设置使用的光标参数处理函数
+	glfwSetCursorPosCallback(window, mouse_callback);
+	// 让GLAD获取本机的OpenGL信息并初始化
+	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+	{
+		cout << "Failed to initialize GLAD\n";
+		return nullptr;
+	}
+
+	int nrAttributes;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+	std::cout << "Maximum number of vertex attributes supported: " << nrAttributes << std::endl;
+	
+	// 设置渲染模式为线框模式
+#ifdef __USE_LINE_MODE__
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+#endif
+
+	glEnable(GL_DEPTH_TEST);						// 是否开启深度测试
+	glDepthMask(GL_TRUE);							// 开启深度测试时，是否覆盖深度缓存，默认GL_TRUE
+	/*
+	 * GL_ALWAYS			一直传递深度结果
+	 * GL_NEVER				从不传递深度结果
+	 * GL_LESS				结果小于储存值时传递，默认情况下是GL_LESS，所以cam是朝向z轴正方向
+	 * GL_EQUAL				结果等于储存值时传递
+	 * GL_LEQUAL			结果小于等于储存值时传递
+	 * GL_GREATER			结果大于储存值时传递
+	 * GL_NOTEQUAL			结果不等于储存值时传递
+	 * GL_GEQUAL			结果大于等于储存值时传递
+	 */
+	glDepthFunc(GL_LESS);							// 深度测试方式，默认GL_LESS
+
+	glEnable(GL_STENCIL_TEST);						// 是否开启模板缓存
+	/*
+	 * 这个函数用于对每个stencil取“与”，一般要么全部与0要么与1
+	 * 0xFF					正常写入，与1相当于没变
+	 * 0x00					全部清零，与0全部变0
+	 */
+	glStencilMask(0xFF);							// 开启模板测试时，是否对模板覆盖，默认0xFF
+	/*
+	 * func						比较方式
+	 * ref						比较对象
+	 * mask						覆盖方式
+	 */
+	glStencilFunc(GL_EQUAL, 1, 0xFF);
+	/*
+	 * sfail					stencil未通过的处理方式
+	 * dpfail					stencil通过而depth未通过的处理方式
+	 * dppass					stencil和depth都通过后的处理方式
+	 *
+	 * 方式：
+	 * GL_KEEP					保持当前值
+	 * GL_ZERO					设为0
+	 * GL_REPLACE				替换为glStencilFunc中ref的值
+	 * GL_INCR					小于最大值时+1
+	 * GL_INCR_WRAP				小于最大值时+1，大于最大值时设回为0
+	 * GL_DECR					大于最小值时-1
+	 * GL_DECR_WRAP				大于最小值时-1，小于最小值时设回为最大值
+	 * GL_INVERT				对每个位取反
+	 */
+	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+	return window;
 }
