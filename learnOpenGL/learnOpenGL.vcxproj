@@ -167,15 +167,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="cube.h" />
     <ClInclude Include="header_collection.h" />
+    <ClInclude Include="light.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="plane.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shader\cube.fs" />
     <None Include="shader\model_fs.glsl" />
     <None Include="shader\model_vs.glsl" />
     <None Include="shader\fragment_shader.glsl" />

@@ -26,7 +26,7 @@ inline unsigned int load_texture(const char* name, const char* directory)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	int width, height, nrChannels;
-	stbi_set_flip_vertically_on_load(true);			// ∂¡»°Ã˘Õº « «∑Òµﬂµπ
+	//stbi_set_flip_vertically_on_load(true);			// ∂¡»°Ã˘Õº « «∑Òµﬂµπ
 	unsigned char* data = stbi_load(file_name.c_str(), &width, &height, &nrChannels, 0);
 	if (data)
 	{

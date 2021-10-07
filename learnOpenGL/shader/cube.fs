@@ -4,7 +4,6 @@ out vec4 FragColor;
 in vec2 TexCoords;
 in vec3 FragPos;
 uniform sampler2D texture_diffuse1;
-uniform vec3 cam_pos;
 
 float near = 0.1;
 float far = 100.0;
