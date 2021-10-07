@@ -9,6 +9,8 @@
 #include "texture.h"
 #include "Model.h"
 #include "Mesh.h"
+#include "cube.h"
+#include "plane.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"									// 读取图片的库
 // 线性代数相关的数学库

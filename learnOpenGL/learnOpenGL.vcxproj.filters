@@ -68,6 +68,15 @@
     <ClInclude Include="Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plane.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\fragment_shader.glsl">
@@ -86,6 +95,9 @@
       <Filter>shader</Filter>
     </None>
     <None Include="shader\shader_single_color.fs">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\cube.fs">
       <Filter>shader</Filter>
     </None>
   </ItemGroup>

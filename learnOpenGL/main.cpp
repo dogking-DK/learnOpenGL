@@ -1,6 +1,4 @@
-
 #include "header_collection.h"
-#include "include/glad/glad.h"
 // 是否使用线框渲染模式
 //#define __USE_LINE_MODE__
 
@@ -53,22 +51,20 @@ int main(int argc, char* argv[])
 	cout << "link temp shader...\n";
 	Shader tempShader("shader/model_vs.glsl", "shader/model_fs.glsl");
 	cout << "link done\n";
-	
-	unsigned int texture1, texture2, texture3;
-	texture1 = load_texture("model/pack/diffuse.jpg");
-	texture2 = load_texture("texture/container_spec.png");
-	texture3 = load_texture("texture/matrix.jpg");
-
+	Shader colorShader("shader/model_vs.glsl", "shader/shader_single_color.fs");
 	
 	// --------------------------------------------------------
 
 	glm::mat4 trans = glm::mat4(1.0f);
 
-
-	
 	//Model temp_model("model/pack/backpack.obj");
-	Model temp_model("model/pack/backpack.obj");
-
+	//Model temp_model("model/mug/mug.obj");
+	Cube cube;
+	cube.add_texture("texture/matrix.jpg", "diffuse_texture");
+	Plane plane;
+	plane.add_texture("texture/awesomeface.png", "diffuse_texture");
+	plane.move(glm::vec3(0.0, -1.0, 0.0));
+	plane.scale(glm::vec3(5.0, 5.0, 5.0));
 	
 	// 位移矩阵
 	glm::mat4 model = glm::mat4(1.0f);
@@ -84,12 +80,15 @@ int main(int argc, char* argv[])
 		// 检测输入
 		processInput(window);
 
-		// 进行渲染更新
+		glEnable(GL_DEPTH_TEST);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 		
+		// 进行渲染更新
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-
+		
+		projection = glm::perspective(glm::radians(fov), static_cast<float>(screen_width) / static_cast<float>(screen_height), 0.1f, 100.0f);
+		/*
 		glm::vec3 light_vec = glm::vec3(1.0f);
 		light_vec.x = 1.0f;
 		light_vec.y = 1.0f;
@@ -112,39 +111,39 @@ int main(int argc, char* argv[])
 		lightShader.setVec3f("light.diffuse", ambientColor);
 		lightShader.setVec3f("light.spectral", specularColor);
 		glBindVertexArray(light_VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, texture3);
-		glBindVertexArray(VAO);
 
-		model = glm::mat4(1.0f);
-		projection = glm::perspective(glm::radians(fov), static_cast<float>(screen_width) / static_cast<float>(screen_height), 0.1f, 100.0f);
-		glm::mat3 normal_model = glm::mat3(glm::transpose(glm::inverse(model)));
-		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
-		{
-			cout << endl;
-			for (int i = 0; i < 3; ++i)
-			{
-				for (int j = 0; j < 3; ++j)
-				{
-					cout << normal_model[i][j] << " ";
-				}
-				cout << endl;
-			}
-		}
 
 		tempShader.use();
 		tempShader.setMat4f("model", model);
 		tempShader.setMat4f("view", cam.view());
 		tempShader.setMat4f("projection", projection);
-		tempShader.setVec3f("cam_pos", light_pos);
 
-		temp_model.draw(tempShader);
+		//temp_model.draw(tempShader);
+
+		glStencilMask(0x00);
+		tempShader.setMat4f("model", plane.get_model());
+		plane.draw(tempShader);
+
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);
+		tempShader.setMat4f("model", model);
+		cube.draw(tempShader);
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00);
+		glDisable(GL_DEPTH_TEST);
+		colorShader.use();
+		colorShader.setMat4f("view", cam.view());
+		colorShader.setMat4f("projection", projection);
+		cube.scale(glm::vec3(1.25, 1.25, 1.25));
+		colorShader.setMat4f("model", cube.get_model());
+		cube.draw(colorShader);
+		cube.scale(glm::vec3(0.8, 0.8, 0.8));
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glEnable(GL_DEPTH_TEST);
 
 		
 		// 更新画面，处理事件	
@@ -272,7 +271,7 @@ GLFWwindow* init()
 #endif
 
 	glEnable(GL_DEPTH_TEST);						// 是否开启深度测试
-	glDepthMask(GL_TRUE);							// 开启深度测试时，是否覆盖深度缓存，默认GL_TRUE
+	//glDepthMask(GL_TRUE);							// 开启深度测试时，是否覆盖深度缓存，默认GL_TRUE
 	/*
 	 * GL_ALWAYS			一直传递深度结果
 	 * GL_NEVER				从不传递深度结果
@@ -283,7 +282,7 @@ GLFWwindow* init()
 	 * GL_NOTEQUAL			结果不等于储存值时传递
 	 * GL_GEQUAL			结果大于等于储存值时传递
 	 */
-	glDepthFunc(GL_LESS);							// 深度测试方式，默认GL_LESS
+	//glDepthFunc(GL_LESS);							// 深度测试方式，默认GL_LESS
 
 	glEnable(GL_STENCIL_TEST);						// 是否开启模板缓存
 	/*
@@ -291,13 +290,13 @@ GLFWwindow* init()
 	 * 0xFF					正常写入，与1相当于没变
 	 * 0x00					全部清零，与0全部变0
 	 */
-	glStencilMask(0xFF);							// 开启模板测试时，是否对模板覆盖，默认0xFF
+	//glStencilMask(0xFF);							// 开启模板测试时，是否对模板覆盖，默认0xFF
 	/*
 	 * func						比较方式
 	 * ref						比较对象
 	 * mask						覆盖方式
 	 */
-	glStencilFunc(GL_EQUAL, 1, 0xFF);
+	//glStencilFunc(GL_EQUAL, 1, 0xFF);
 	/*
 	 * sfail					stencil未通过的处理方式
 	 * dpfail					stencil通过而depth未通过的处理方式
@@ -313,6 +312,6 @@ GLFWwindow* init()
 	 * GL_DECR_WRAP				大于最小值时-1，小于最小值时设回为最大值
 	 * GL_INVERT				对每个位取反
 	 */
-	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+	//glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	return window;
 }

@@ -12,6 +12,8 @@ struct Vertex
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec2 tex_coords;
+	Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 tex_coords) : position(position), normal(normal), tex_coords(tex_coords) {}
+	Vertex() {}
 };
 
 struct Texture
@@ -29,14 +31,15 @@ public:
 	std::vector<Texture> textures;				// ²ÄÖÊ
 
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
+	Mesh() {}
 	void draw(Shader& shader);
+	void setup_mesh();
 
 private:
 	unsigned int VAO;
 	unsigned int VBO;
 	unsigned int EBO;
 
-	void setup_mesh();
 };
 
 
