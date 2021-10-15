@@ -19,6 +19,7 @@ public:
 	void process_cursor_motion(float x_offset, float y_offset);						// 通过鼠标移动更新镜头方向
 	void process_key_press(GLFWwindow* window);										// 通过键盘输入更新镜头位置移动
 	void update_camera_speed(const float adjust);									// 调整相机移速，平衡因帧数带来的不稳定
+	glm::mat4 back_view() const;													// 获得背后的相机view矩阵
 private:
 	glm::vec3 camera_position = glm::vec3(1.0f);								// 相机的位置
 	glm::vec3 camera_direction = glm::vec3(1.0f);								// 相机的方向

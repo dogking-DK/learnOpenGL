@@ -10,8 +10,10 @@ public:
 	void move(const glm::vec3 dis);
 	void scale(const glm::vec3 scal);
 	void rotate(const float angle, const glm::vec3 axis);
-	void add_texture(const char* path, std::string type_name);
+	void add_texture(const char* path, const std::string& type_name);
+	void add_texture(const unsigned int tex, const std::string& type_name);
 	glm::mat4 get_model() const;
+	void model_vertices();
 private:
 	Mesh mesh;
 	//glm::vec3 distance = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -39,7 +41,7 @@ inline Plane::Plane()
 
 	mesh.vertices = vertices;
 
-	std::vector<unsigned int> indices = { 0, 1, 3, 2, 1, 3 };
+	std::vector<unsigned int> indices = { 0, 1, 3, 3, 1, 2 };
 	mesh.indices = indices;
 	mesh.setup_mesh();
 }
@@ -70,7 +72,7 @@ inline glm::mat4 Plane::get_model() const
 	return model_mat;
 }
 
-inline void Plane::add_texture(const char* path, std::string type_name)
+inline void Plane::add_texture(const char* path, const std::string& type_name)
 {
 	const unsigned int id = load_texture(path);
 	Texture texture;
@@ -78,6 +80,21 @@ inline void Plane::add_texture(const char* path, std::string type_name)
 	texture.path = path;
 	texture.type = type_name;
 	mesh.textures.push_back(texture);
+}
+inline void Plane::add_texture(const unsigned int tex, const std::string& type_name)
+{
+	Texture texture;
+	texture.id = tex;
+	texture.type = type_name;
+	mesh.textures.push_back(texture);
+}
+inline void Plane::model_vertices()
+{
+	for ( Vertex vec : mesh.vertices)
+	{
+		vec.position = glm::vec3(model_mat * glm::vec4(vec.position, 1.0f));
+	}
+	model_mat = glm::mat4(1.0f);
 }
 
 #endif

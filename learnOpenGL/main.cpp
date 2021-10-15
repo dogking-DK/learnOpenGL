@@ -52,19 +52,22 @@ int main(int argc, char* argv[])
 	Shader tempShader("shader/model_vs.glsl", "shader/model_fs.glsl");
 	cout << "link done\n";
 	Shader colorShader("shader/model_vs.glsl", "shader/shader_single_color.fs");
-	
+	Shader screen_shader("shader/frame.vs", "shader/frame.fs");
+
 	// --------------------------------------------------------
 
 	glm::mat4 trans = glm::mat4(1.0f);
 
 	//Model temp_model("model/pack/backpack.obj");
 	//Model temp_model("model/mug/mug.obj");
+	
 	Cube cube;
 	cube.add_texture("texture/matrix.jpg", "diffuse_texture");
 	Plane plane;
 	plane.add_texture("texture/awesomeface.png", "diffuse_texture");
 	plane.move(glm::vec3(0.0, -1.0, 0.0));
-	plane.scale(glm::vec3(5.0, 5.0, 5.0));
+	plane.scale(glm::vec3(10.0, 10.0, 10.0));
+	Plane rear_mirror;
 	
 	// 位移矩阵
 	glm::mat4 model = glm::mat4(1.0f);
@@ -72,14 +75,83 @@ int main(int argc, char* argv[])
 	// 透视投影矩阵
 	glm::mat4 projection = glm::perspective(glm::radians(fov), static_cast<float>(screen_width) / static_cast<float>(screen_height), 0.1f, 100.0f);
 
-	second_start = glfwGetTime();
+	std::vector<std::string> faces = { "right.jpg", "left.jpg", "top", "bottom", "back", "front" };
+	unsigned int cubemap = load_cubemap("texture/skybox", faces);
+	Cube skybox;
+	
+	// --------------------------------------------------------
+	/*
+	unsigned int quad_vao, quad_vbo;
+	glGenVertexArrays(1, &quad_vao);
+	glGenBuffers(1, &quad_vbo);
+	glBindVertexArray(quad_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, quad_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	
+	unsigned int fbo;
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	unsigned int tex;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screen_width, screen_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screen_width, screen_height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
+
+	unsigned int framebuffer;
+	glGenFramebuffers(1, &framebuffer);	
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	// create a color attachment texture
+	unsigned int textureColorbuffer;
+	glGenTextures(1, &textureColorbuffer);
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screen_width, screen_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screen_width, screen_height); // use a single renderbuffer object for both a depth AND stencil buffer.
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
+	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	rear_mirror.add_texture(textureColorbuffer, "texture_diffuse");
+	rear_mirror.move(glm::vec3(0.0, 0.8, 0.0));	
+	rear_mirror.scale(glm::vec3(0.3, 0.2, 1.0));
+
+
+	
 	// ---------------------------------------------------------
+	second_start = glfwGetTime();
+	std::cout << "-----------------------------------------\n";
+	std::cout << "start rendering...\n";
+	std::cout << "-----------------------------------------\n";
 	// 不停地渲染画面，监听事件
 	while (!glfwWindowShouldClose(window))
 	{
 		// 检测输入
 		processInput(window);
 
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glEnable(GL_DEPTH_TEST);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 		
@@ -117,34 +189,59 @@ int main(int argc, char* argv[])
 
 		tempShader.use();
 		tempShader.setMat4f("model", model);
-		tempShader.setMat4f("view", cam.view());
+		//glm::mat4 temp_view = glm::rotate(cam.view(), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		
+		tempShader.setMat4f("view", cam.back_view());
 		tempShader.setMat4f("projection", projection);
 
-		//temp_model.draw(tempShader);
-
-		glStencilMask(0x00);
+		cube.draw(tempShader);
 		tempShader.setMat4f("model", plane.get_model());
 		plane.draw(tempShader);
 
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glStencilMask(0xFF);
+			/*
+			glStencilMask(0x00);
+			tempShader.setMat4f("model", plane.get_model());
+			plane.draw(tempShader);
+
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilMask(0xFF);
+			tempShader.setMat4f("model", model);
+			cube.draw(tempShader);
+
+			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+			glStencilMask(0x00);
+			glDisable(GL_DEPTH_TEST);
+			colorShader.use();
+			colorShader.setMat4f("view", cam.view());
+			colorShader.setMat4f("projection", projection);
+			cube.scale(glm::vec3(1.25, 1.25, 1.25));
+			colorShader.setMat4f("model", cube.get_model());
+			cube.draw(colorShader);
+			cube.scale(glm::vec3(0.8, 0.8, 0.8));
+			glStencilMask(0xFF);
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glEnable(GL_DEPTH_TEST);
+			*/
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		tempShader.setMat4f("view", cam.view());
 		tempShader.setMat4f("model", model);
 		cube.draw(tempShader);
+		tempShader.setMat4f("model", plane.get_model());
+		plane.draw(tempShader);
 
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glStencilMask(0x00);
-		glDisable(GL_DEPTH_TEST);
-		colorShader.use();
-		colorShader.setMat4f("view", cam.view());
-		colorShader.setMat4f("projection", projection);
-		cube.scale(glm::vec3(1.25, 1.25, 1.25));
-		colorShader.setMat4f("model", cube.get_model());
-		cube.draw(colorShader);
-		cube.scale(glm::vec3(0.8, 0.8, 0.8));
-		glStencilMask(0xFF);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glEnable(GL_DEPTH_TEST);
 
+		
+		
+		glDisable(GL_DEPTH_TEST | GL_STENCIL_TEST);
+		screen_shader.use();
+		//glBindVertexArray(quadVAO);
+		//glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
+		screen_shader.setMat4f("model", rear_mirror.get_model());
+		rear_mirror.draw(screen_shader);
 		
 		// 更新画面，处理事件	
 		glfwSwapBuffers(window);
@@ -313,5 +410,9 @@ GLFWwindow* init()
 	 * GL_INVERT				对每个位取反
 	 */
 	//glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+	
+	//glEnable(GL_CULL_FACE);							// 开启表面剔除
+	//glCullFace(GL_BACK);							// 剔除面的类型
 	return window;
 }

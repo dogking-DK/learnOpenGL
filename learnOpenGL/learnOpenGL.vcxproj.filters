@@ -100,6 +100,10 @@
     <None Include="shader\cube.fs">
       <Filter>shader</Filter>
     </None>
+    <None Include="shader\frame.vs" />
+    <None Include="shader\frame.fs" />
+    <None Include="shader\skybox.vs" />
+    <None Include="shader\skybox.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="texture\awesomeface.png">

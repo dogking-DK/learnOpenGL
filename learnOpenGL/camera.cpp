@@ -11,7 +11,12 @@ glm::mat4 camera::view() const
 {
 	return glm::lookAt(camera_position, camera_position + camera_direction, camera_up);
 }
-
+glm::mat4 camera::back_view() const
+{
+	glm::mat4 reverse = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), camera_up);
+	glm::vec3 reverse_direction = glm::vec3(reverse * glm::vec4(camera_direction, 0.0f));
+	return glm::lookAt(camera_position, camera_position + reverse_direction, camera_up);
+}
 void camera::process_cursor_motion(float x_offset, float y_offset)
 {
 	x_offset *= mouse_sensitivity;
@@ -35,7 +40,7 @@ void camera::process_cursor_motion(float x_offset, float y_offset)
 	direction.x = -cos(glm::radians(yaw)) * sin(glm::radians(pitch));
 	direction.y = cos(glm::radians(pitch));
 	direction.z = -sin(glm::radians(yaw)) * sin(glm::radians(pitch));
-	camera_up = direction;
+	camera_up = glm::normalize(direction);
 }
 
 void camera::process_key_press(GLFWwindow* window)
@@ -64,3 +69,4 @@ glm::vec3 camera::position() const
 {
 	return camera_position;
 }
+
