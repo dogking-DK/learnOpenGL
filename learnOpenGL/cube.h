@@ -110,6 +110,12 @@ inline void Cube::add_texture(const char* path, std::string type_name)
 	texture.path = path;
 	texture.type = type_name;
 	mesh.textures.push_back(texture);
+	std::cout << "--------------cube texture address-----------------\n";
+	for (unsigned int i = 0; i < mesh.textures.size(); ++i)
+	{
+		std::cout << "cube texture" + i << ": " << mesh.textures[i].id << std::endl;
+	}
+	std::cout << "--------------cube texture address-----------------\n";
 }
 inline glm::mat4 Cube::get_model() const
 {

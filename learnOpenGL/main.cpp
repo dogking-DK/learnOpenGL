@@ -53,7 +53,8 @@ int main(int argc, char* argv[])
 	cout << "link done\n";
 	Shader colorShader("shader/model_vs.glsl", "shader/shader_single_color.fs");
 	Shader screen_shader("shader/frame.vs", "shader/frame.fs");
-
+	Shader skybox_shader("shader/skybox.vs", "shader/skybox.fs");
+	
 	// --------------------------------------------------------
 
 	glm::mat4 trans = glm::mat4(1.0f);
@@ -75,9 +76,9 @@ int main(int argc, char* argv[])
 	// 透视投影矩阵
 	glm::mat4 projection = glm::perspective(glm::radians(fov), static_cast<float>(screen_width) / static_cast<float>(screen_height), 0.1f, 100.0f);
 
-	std::vector<std::string> faces = { "right.jpg", "left.jpg", "top", "bottom", "back", "front" };
-	unsigned int cubemap = load_cubemap("texture/skybox", faces);
-	Cube skybox;
+	std::vector<std::string> faces = { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg" };
+	CubeMap skybox;
+	skybox.load_tex("texture/skybox", faces);
 	
 	// --------------------------------------------------------
 	/*
@@ -113,6 +114,7 @@ int main(int argc, char* argv[])
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
 
+	/*
 	unsigned int framebuffer;
 	glGenFramebuffers(1, &framebuffer);	
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -137,6 +139,7 @@ int main(int argc, char* argv[])
 	rear_mirror.add_texture(textureColorbuffer, "texture_diffuse");
 	rear_mirror.move(glm::vec3(0.0, 0.8, 0.0));	
 	rear_mirror.scale(glm::vec3(0.3, 0.2, 1.0));
+	*/
 
 
 	
@@ -150,8 +153,8 @@ int main(int argc, char* argv[])
 	{
 		// 检测输入
 		processInput(window);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		
+		//glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glEnable(GL_DEPTH_TEST);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 		
@@ -187,17 +190,22 @@ int main(int argc, char* argv[])
 
 
 
+		
+		
 		tempShader.use();
 		tempShader.setMat4f("model", model);
 		//glm::mat4 temp_view = glm::rotate(cam.view(), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		
-		tempShader.setMat4f("view", cam.back_view());
+		tempShader.setMat4f("view", cam.view());
 		tempShader.setMat4f("projection", projection);
-
 		cube.draw(tempShader);
 		tempShader.setMat4f("model", plane.get_model());
 		plane.draw(tempShader);
 
+		skybox_shader.use();
+		skybox_shader.setMat4f("projection", projection);
+		skybox_shader.setMat4f("view", glm::mat4(glm::mat3(cam.view())));
+		skybox.draw(skybox_shader);
+		
 			/*
 			glStencilMask(0x00);
 			tempShader.setMat4f("model", plane.get_model());
@@ -222,7 +230,7 @@ int main(int argc, char* argv[])
 			glStencilFunc(GL_ALWAYS, 1, 0xFF);
 			glEnable(GL_DEPTH_TEST);
 			*/
-
+		/*
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -231,17 +239,17 @@ int main(int argc, char* argv[])
 		cube.draw(tempShader);
 		tempShader.setMat4f("model", plane.get_model());
 		plane.draw(tempShader);
-
+		*/
 
 		
 		
-		glDisable(GL_DEPTH_TEST | GL_STENCIL_TEST);
-		screen_shader.use();
+		// glDisable(GL_DEPTH_TEST | GL_STENCIL_TEST);
+		// screen_shader.use();
 		//glBindVertexArray(quadVAO);
 		//glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
-		screen_shader.setMat4f("model", rear_mirror.get_model());
-		rear_mirror.draw(screen_shader);
+		// screen_shader.setMat4f("model", rear_mirror.get_model());
+		// rear_mirror.draw(screen_shader);
 		
 		// 更新画面，处理事件	
 		glfwSwapBuffers(window);
@@ -413,6 +421,8 @@ GLFWwindow* init()
 
 	
 	//glEnable(GL_CULL_FACE);							// 开启表面剔除
-	//glCullFace(GL_BACK);							// 剔除面的类型
+	//glCullFace(GL_BACK);								// 剔除面的类型
+
+	//glEnable(GL_PROGRAM_POINT_SIZE);					// 启用GLSL中的gl_PointSize
 	return window;
 }

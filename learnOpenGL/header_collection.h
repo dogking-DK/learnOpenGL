@@ -10,6 +10,7 @@
 #include "Model.h"
 #include "Mesh.h"
 #include "cube.h"
+#include "CubeMap.h"
 #include "plane.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"									// ¶ÁÈ¡Í¼Æ¬µÄ¿â

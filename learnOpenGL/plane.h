@@ -80,6 +80,12 @@ inline void Plane::add_texture(const char* path, const std::string& type_name)
 	texture.path = path;
 	texture.type = type_name;
 	mesh.textures.push_back(texture);
+	std::cout << "--------------plane texture address-----------------\n";
+	for (unsigned int i = 0; i < mesh.textures.size(); ++i)
+	{
+		std::cout << "plane texture" + i << ": " << mesh.textures[i].id << std::endl;
+	}
+	std::cout << "--------------plane texture address-----------------\n";
 }
 inline void Plane::add_texture(const unsigned int tex, const std::string& type_name)
 {

@@ -19,6 +19,12 @@
     <Filter Include="texture">
       <UniqueIdentifier>{d868a1c8-4ca8-48f8-b458-1014528a7dac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shader\vs">
+      <UniqueIdentifier>{63944174-d889-4fe5-ad78-d478519b0c8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader\fs">
+      <UniqueIdentifier>{d14abb68-779c-43fd-b6d9-ca8f947b78cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -77,6 +83,9 @@
     <ClInclude Include="plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CubeMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\fragment_shader.glsl">
@@ -100,10 +109,18 @@
     <None Include="shader\cube.fs">
       <Filter>shader</Filter>
     </None>
-    <None Include="shader\frame.vs" />
-    <None Include="shader\frame.fs" />
-    <None Include="shader\skybox.vs" />
-    <None Include="shader\skybox.fs" />
+    <None Include="shader\frame.fs">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\frame.vs">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\skybox.fs">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="shader\skybox.vs">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="texture\awesomeface.png">
