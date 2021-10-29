@@ -11,7 +11,9 @@
 #include "Mesh.h"
 #include "cube.h"
 #include "CubeMap.h"
+#include "utility.h"
 #include "plane.h"
+#include "light.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"									// 读取图片的库
 // 线性代数相关的数学库

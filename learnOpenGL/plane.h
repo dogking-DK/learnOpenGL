@@ -13,6 +13,7 @@ public:
 	void add_texture(const char* path, const std::string& type_name);
 	void add_texture(const unsigned int tex, const std::string& type_name);
 	glm::mat4 get_model() const;
+	glm::mat4 get_normal_model() const;
 	void model_vertices();
 private:
 	Mesh mesh;
@@ -83,9 +84,9 @@ inline void Plane::add_texture(const char* path, const std::string& type_name)
 	std::cout << "--------------plane texture address-----------------\n";
 	for (unsigned int i = 0; i < mesh.textures.size(); ++i)
 	{
-		std::cout << "plane texture" + i << ": " << mesh.textures[i].id << std::endl;
+		std::cout << "plane texture" + i << ": " << mesh.textures[i].id << "|" << mesh.textures[i].path << "|" << mesh.textures[i].type << std::endl;
 	}
-	std::cout << "--------------plane texture address-----------------\n";
+	std::cout << "-------------|plane texture address|----------------\n";
 }
 inline void Plane::add_texture(const unsigned int tex, const std::string& type_name)
 {
@@ -102,5 +103,8 @@ inline void Plane::model_vertices()
 	}
 	model_mat = glm::mat4(1.0f);
 }
-
+inline glm::mat4 Plane::get_normal_model() const
+{
+	return glm::transpose(glm::inverse(model_mat));
+}
 #endif

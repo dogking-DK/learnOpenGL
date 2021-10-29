@@ -12,6 +12,7 @@ public:
 	void rotate(const float angle, const glm::vec3 axis);
 	void add_texture(const char* path, std::string type_name);
 	glm::mat4 get_model() const;
+	glm::mat4 get_normal_model() const;
 
 private:
 	Mesh mesh;
@@ -113,13 +114,17 @@ inline void Cube::add_texture(const char* path, std::string type_name)
 	std::cout << "--------------cube texture address-----------------\n";
 	for (unsigned int i = 0; i < mesh.textures.size(); ++i)
 	{
-		std::cout << "cube texture" + i << ": " << mesh.textures[i].id << std::endl;
+		std::cout << "cube texture" + i << ": " << mesh.textures[i].id << "|" << mesh.textures[i].path << "|" << mesh.textures[i].type << std::endl;
 	}
-	std::cout << "--------------cube texture address-----------------\n";
+	std::cout << "-------------|cube texture address|----------------\n";
 }
 inline glm::mat4 Cube::get_model() const
 {
 	return model_mat;
+}
+inline glm::mat4 Cube::get_normal_model() const
+{
+	return glm::transpose(glm::inverse(model_mat));
 }
 
 #endif

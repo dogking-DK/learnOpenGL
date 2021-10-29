@@ -86,40 +86,43 @@
     <ClInclude Include="CubeMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\fragment_shader.glsl">
-      <Filter>shader</Filter>
-    </None>
-    <None Include="shader\vertex_shader.glsl">
-      <Filter>shader</Filter>
-    </None>
-    <None Include="shader\light.glsl">
-      <Filter>shader</Filter>
-    </None>
-    <None Include="shader\model_vs.glsl">
-      <Filter>shader</Filter>
-    </None>
-    <None Include="shader\model_fs.glsl">
-      <Filter>shader</Filter>
-    </None>
-    <None Include="shader\shader_single_color.fs">
-      <Filter>shader</Filter>
-    </None>
     <None Include="shader\cube.fs">
-      <Filter>shader</Filter>
+      <Filter>shader\fs</Filter>
     </None>
     <None Include="shader\frame.fs">
-      <Filter>shader</Filter>
+      <Filter>shader\fs</Filter>
     </None>
-    <None Include="shader\frame.vs">
-      <Filter>shader</Filter>
+    <None Include="shader\fragment_shader.glsl">
+      <Filter>shader\fs</Filter>
+    </None>
+    <None Include="shader\model_fs.glsl">
+      <Filter>shader\fs</Filter>
     </None>
     <None Include="shader\skybox.fs">
-      <Filter>shader</Filter>
+      <Filter>shader\fs</Filter>
+    </None>
+    <None Include="shader\shader_single_color.fs">
+      <Filter>shader\fs</Filter>
+    </None>
+    <None Include="shader\frame.vs">
+      <Filter>shader\vs</Filter>
+    </None>
+    <None Include="shader\model_vs.glsl">
+      <Filter>shader\vs</Filter>
     </None>
     <None Include="shader\skybox.vs">
-      <Filter>shader</Filter>
+      <Filter>shader\vs</Filter>
+    </None>
+    <None Include="shader\main.vs">
+      <Filter>shader\vs</Filter>
+    </None>
+    <None Include="shader\main.fs">
+      <Filter>shader\fs</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

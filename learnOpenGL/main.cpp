@@ -1,3 +1,5 @@
+#include <iomanip>
+
 #include "header_collection.h"
 // 是否使用线框渲染模式
 //#define __USE_LINE_MODE__
@@ -45,37 +47,38 @@ int main(int argc, char* argv[])
 	}
 
 	// --------------------------------------------------------------
-	cout << "link light shader...\n";
-	Shader lightShader("shader/vertex_shader.glsl", "shader/light.glsl");
-	cout << "link done\n";
 	cout << "link temp shader...\n";
-	Shader tempShader("shader/model_vs.glsl", "shader/model_fs.glsl");
+	Shader tempShader("shader/main.vs", "shader/main.fs");
+	glGetError();
 	cout << "link done\n";
-	Shader colorShader("shader/model_vs.glsl", "shader/shader_single_color.fs");
-	Shader screen_shader("shader/frame.vs", "shader/frame.fs");
 	Shader skybox_shader("shader/skybox.vs", "shader/skybox.fs");
 	
 	// --------------------------------------------------------
 
 	glm::mat4 trans = glm::mat4(1.0f);
 
-	//Model temp_model("model/pack/backpack.obj");
+	Model temp_model("model/pack/backpack.obj");
+	//Model temp_model("model/handgun/handgun.obj");
 	//Model temp_model("model/mug/mug.obj");
 	
 	Cube cube;
-	cube.add_texture("texture/matrix.jpg", "diffuse_texture");
+	cube.add_texture("texture/container2.png", "texture_diffuse");
+	cube.add_texture("texture/container_spec.png", "texture_specular");
+	cube.move(glm::vec3(10.0f, 0.0f, 0.0f));
 	Plane plane;
-	plane.add_texture("texture/awesomeface.png", "diffuse_texture");
+	plane.add_texture("texture/matrix.jpg", "texture_diffuse");
+	plane.add_texture("texture/old.jpg", "texture_specular");
 	plane.move(glm::vec3(0.0, -1.0, 0.0));
-	plane.scale(glm::vec3(10.0, 10.0, 10.0));
-	Plane rear_mirror;
+	plane.scale(glm::vec3(50.0, 50.0, 50.0));
+	print_mat4(plane.get_model());
+	DirectionalLight light(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.3f), glm::vec3(0.4f), glm::vec3(0.6f));
 	
+	print_mat4(cam.view());
 	// 位移矩阵
 	glm::mat4 model = glm::mat4(1.0f);
 	//model = glm::rotate(model, glm::radians(-55.0f), glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
 	// 透视投影矩阵
 	glm::mat4 projection = glm::perspective(glm::radians(fov), static_cast<float>(screen_width) / static_cast<float>(screen_height), 0.1f, 100.0f);
-
 	std::vector<std::string> faces = { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg" };
 	CubeMap skybox;
 	skybox.load_tex("texture/skybox", faces);
@@ -193,13 +196,30 @@ int main(int argc, char* argv[])
 		
 		
 		tempShader.use();
-		tempShader.setMat4f("model", model);
+
+		/*glActiveTexture(GL_TEXTURE3);
+		tempShader.setInt("temp", 3);
+		glBindTexture(GL_TEXTURE_2D, 4);*/
+
+		
+		tempShader.setVec3f("temp_light.direction", light.direction);
+		tempShader.setVec3f("temp_light.ambient", light.ambient);
+		tempShader.setVec3f("temp_light.diffuse", light.diffuse);
+		tempShader.setVec3f("temp_light.specular", light.specular);
+		tempShader.setVec3f("cam_pos", cam.position());
+		tempShader.setMat4f("model", cube.get_model());
+		tempShader.setMat4f("normal_model", cube.get_normal_model());
 		//glm::mat4 temp_view = glm::rotate(cam.view(), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		tempShader.setMat4f("view", cam.view());
 		tempShader.setMat4f("projection", projection);
 		cube.draw(tempShader);
+		//tempShader.setMat4f("model", model);
+		//cube.draw(tempShader);
 		tempShader.setMat4f("model", plane.get_model());
+		tempShader.setMat4f("normal_model", plane.get_normal_model());
 		plane.draw(tempShader);
+		tempShader.setMat4f("model", model);
+		//temp_model.draw(tempShader);
 
 		skybox_shader.use();
 		skybox_shader.setMat4f("projection", projection);
@@ -271,7 +291,6 @@ int main(int argc, char* argv[])
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteVertexArrays(1, &light_VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteProgram(lightShader.ID);
 	
 	// 终止窗口
 	glfwTerminate();
@@ -426,3 +445,4 @@ GLFWwindow* init()
 	//glEnable(GL_PROGRAM_POINT_SIZE);					// 启用GLSL中的gl_PointSize
 	return window;
 }
+

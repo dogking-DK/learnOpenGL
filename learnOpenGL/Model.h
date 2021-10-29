@@ -5,7 +5,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "Mesh.h"
-#include "Shader.h"
+#include "shader.h"
 #include "texture.h"
 class Model
 {
