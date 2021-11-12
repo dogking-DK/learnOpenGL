@@ -181,6 +181,8 @@
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shader\light.fs" />
+    <None Include="shader\light.vs" />
     <None Include="shader\main.fs" />
     <None Include="shader\main.vs" />
     <None Include="shader\cube.fs" />
@@ -190,8 +192,15 @@
     <None Include="shader\model_vs.glsl" />
     <None Include="shader\fragment_shader.glsl" />
     <None Include="shader\shader_single_color.fs" />
+    <None Include="shader\shadow.fs" />
+    <None Include="shader\shadow.vs" />
+    <None Include="shader\shadow_depth.fs" />
+    <None Include="shader\shadow_depth.vs" />
     <None Include="shader\skybox.fs" />
     <None Include="shader\skybox.vs" />
+    <None Include="shader\vector.fs" />
+    <None Include="shader\vector.gs" />
+    <None Include="shader\vector.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="texture\awesomeface.png" />

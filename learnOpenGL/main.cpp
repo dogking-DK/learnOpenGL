@@ -26,6 +26,9 @@ unsigned int light_VAO;
 // element buffer object
 unsigned int EBO;
 
+const unsigned int shadow_width = 600;
+const unsigned int shadow_height = 600;
+
 int fps = 0;
 double second_start;
 double second_end;
@@ -38,7 +41,17 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec3 light_pos = glm::vec3(2.0f, 1.0f, 5.0f);
 camera cam;
 
-int main(int argc, char* argv[])
+float quadVertices[] = { 
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		 1.0f,  1.0f,  1.0f, 1.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
+
+		 1.0f,  1.0f,  1.0f, 1.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f
+};
+
+int main()
 {
 	GLFWwindow* window = init();
 	if (window == nullptr)
@@ -49,31 +62,58 @@ int main(int argc, char* argv[])
 	// --------------------------------------------------------------
 	cout << "link temp shader...\n";
 	Shader tempShader("shader/main.vs", "shader/main.fs");
-	glGetError();
 	cout << "link done\n";
 	Shader skybox_shader("shader/skybox.vs", "shader/skybox.fs");
+	Shader light_shader("shader/light.vs", "shader/light.fs");
+	Shader vector_shader("shader/vector.vs", "shader/vector.gs", "shader/vector.fs");
+	Shader shadow_shader("shader/shadow.vs", "shader/shadow.fs");
+	Shader show_shadow_shader("shader/shadow_depth.vs", "shader/shadow_depth.fs");
 	
+	glGetError();
+
 	// --------------------------------------------------------
 
 	glm::mat4 trans = glm::mat4(1.0f);
 
-	Model temp_model("model/pack/backpack.obj");
+	//Model temp_model("model/pack/backpack.obj");
 	//Model temp_model("model/handgun/handgun.obj");
 	//Model temp_model("model/mug/mug.obj");
 	
 	Cube cube;
 	cube.add_texture("texture/container2.png", "texture_diffuse");
+	//cube.add_texture("texture/grey.jpg", "texture_diffuse");
 	cube.add_texture("texture/container_spec.png", "texture_specular");
-	cube.move(glm::vec3(10.0f, 0.0f, 0.0f));
+	//cube.add_texture("texture/white.jpg", "texture_specular");
+	//cube.move(glm::vec3(2.0f, 2.0f, 2.0f));
+	//cube.scale(glm::vec3(10));
 	Plane plane;
-	plane.add_texture("texture/matrix.jpg", "texture_diffuse");
-	plane.add_texture("texture/old.jpg", "texture_specular");
+	plane.add_texture("texture/terracotta_tiles/Terracotta_Tiles_006_basecolor.jpg", "texture_diffuse");
+	//plane.add_texture("texture/grey_75.jpg", "texture_diffuse");
+	plane.add_texture("texture/terracotta_tiles/Terracotta_Tiles_006_ambientOcclusion.jpg", "texture_specular");
+	//plane.add_texture("texture/white.jpg", "texture_specular");
 	plane.move(glm::vec3(0.0, -1.0, 0.0));
-	plane.scale(glm::vec3(50.0, 50.0, 50.0));
-	print_mat4(plane.get_model());
-	DirectionalLight light(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(0.3f), glm::vec3(0.4f), glm::vec3(0.6f));
+	plane.scale(glm::vec3(10.0, 20.0, 10.0));
+	Plane screen_plane;
+	screen_plane.rotate(90, glm::vec3(1.0f, 0.0f, 0.0f));
+	DirectionalLight light(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.3f), glm::vec3(0.4f), glm::vec3(0.4f));
+	PointLight point_light(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.4f), glm::vec3(0.4f), glm::vec3(0.4f), 9);
+	SpotLight spot_light(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(-1.0, -1.0, -1.0),glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f));
 	
-	print_mat4(cam.view());
+	cout << "---------------------spot light-----------------\n";
+	cout << spot_light.cutoff << endl;
+	cout << spot_light.outer_cutoff << endl;
+	cout << "---------------------spot light-----------------\n";
+
+	
+	cout << "model mat\n";
+	print_mat4(cube.get_model());
+	print_mat4(glm::inverse(cube.get_model()));
+	print_mat4(glm::transpose(glm::inverse(cube.get_model())));
+	print_mat4(glm::mat4(1.0) * glm::transpose(glm::inverse(cube.get_model())));
+	
+	Cube light_cube;
+	light_cube.move(spot_light.position);
+	light_cube.scale(glm::vec3(0.1f));
 	// 位移矩阵
 	glm::mat4 model = glm::mat4(1.0f);
 	//model = glm::rotate(model, glm::radians(-55.0f), glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)));
@@ -116,7 +156,6 @@ int main(int argc, char* argv[])
 		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
-
 	/*
 	unsigned int framebuffer;
 	glGenFramebuffers(1, &framebuffer);	
@@ -144,10 +183,47 @@ int main(int argc, char* argv[])
 	rear_mirror.scale(glm::vec3(0.3, 0.2, 1.0));
 	*/
 
+	unsigned int depthMapFBO;
+	glGenFramebuffers(1, &depthMapFBO);
+	unsigned int depthMap;
+	glGenTextures(1, &depthMap);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadow_width, shadow_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	float near_plane = 1.0f;
+	float far_plane = 25.0f;
+	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+	glm::mat4 lightView = glm::lookAt(point_light.position - glm::vec3(0.0f, 0.0f, 0.0f), point_light.position + light.direction, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightMatrix = lightProjection * lightView;
+	unsigned int showAVO, showBVO;
+	glGenBuffers(1, &showBVO);
+	glGenVertexArrays(1, &showAVO);
+	glBindVertexArray(showAVO);
+	glBindBuffer(GL_ARRAY_BUFFER, showBVO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	cout << depthMap << "!!!!!!!!!!!!!!!!\n";
 	
 	// ---------------------------------------------------------
 	second_start = glfwGetTime();
+	glm::mat4 rotate_mat = glm::mat4(1.0f);
+	print_mat4(rotate_mat);
 	std::cout << "-----------------------------------------\n";
 	std::cout << "start rendering...\n";
 	std::cout << "-----------------------------------------\n";
@@ -164,7 +240,35 @@ int main(int argc, char* argv[])
 		// 进行渲染更新
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		// ShadowMap生成
+		shadow_shader.use();
+		shadow_shader.setMat4f("lightSpaceMatrix", lightMatrix);
+		glViewport(0, 0, shadow_width, shadow_height);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		shadow_shader.setMat4f("model", cube.get_model());
+		cube.draw(shadow_shader);
+		shadow_shader.setMat4f("model", plane.get_model());
+		plane.draw(shadow_shader);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		// shadowMap图形查看
+		show_shadow_shader.use();
+		glViewport(screen_width, 0, shadow_width, shadow_height);
+		glBindVertexArray(showAVO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindVertexArray(0);
 		
+		glViewport(0, 0, screen_width, screen_height);
+		
+		glm::mat4 temp_view = glm::rotate(cam.view(), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		projection = glm::perspective(glm::radians(fov), static_cast<float>(screen_width) / static_cast<float>(screen_height), 0.1f, 100.0f);
 		/*
 		glm::vec3 light_vec = glm::vec3(1.0f);
@@ -191,36 +295,64 @@ int main(int argc, char* argv[])
 		glBindVertexArray(light_VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
-
-
+		glm::mat4 rot_position = glm::rotate(glm::mat4(1.0f), glm::radians(static_cast<float>(last_time / 360.0)), glm::vec3(0.0f, 1.0f, 0.0f));
 		
 		
 		tempShader.use();
+		tempShader.setVec3f("dir_light.direction", light.direction);
+		tempShader.setVec3f("dir_light.ambient", light.ambient);
+		tempShader.setVec3f("dir_light.diffuse", light.diffuse);
+		tempShader.setVec3f("dir_light.specular", light.specular);
 
-		/*glActiveTexture(GL_TEXTURE3);
-		tempShader.setInt("temp", 3);
-		glBindTexture(GL_TEXTURE_2D, 4);*/
+		tempShader.setVec3f("point_light.position", point_light.position);
+		tempShader.setVec3f("point_light.ambient", point_light.ambient);
+		tempShader.setVec3f("point_light.diffuse", point_light.diffuse);
+		tempShader.setVec3f("point_light.specular", point_light.specular);
+		tempShader.setFloat("point_light.constant", point_light.constant);
+		tempShader.setFloat("point_light.linear", point_light.linear);
+		tempShader.setFloat("point_light.quadratic", point_light.quadratic);
 
-		
-		tempShader.setVec3f("temp_light.direction", light.direction);
-		tempShader.setVec3f("temp_light.ambient", light.ambient);
-		tempShader.setVec3f("temp_light.diffuse", light.diffuse);
-		tempShader.setVec3f("temp_light.specular", light.specular);
+		tempShader.setVec3f("spot_light.position", glm::mat3(rot_position) * spot_light.position);
+		tempShader.setVec3f("spot_light.direction", glm::mat3(rot_position) * spot_light.direction);
+		tempShader.setVec3f("spot_light.ambient", spot_light.ambient);
+		tempShader.setVec3f("spot_light.diffuse", spot_light.diffuse);
+		tempShader.setVec3f("spot_light.specular", spot_light.specular);
+		tempShader.setFloat("spot_light.outer_cutoff", spot_light.outer_cutoff);
+		tempShader.setFloat("spot_light.cutoff", spot_light.cutoff);
+
+		tempShader.setMat4f("lightSpaceMatrix", lightMatrix);
 		tempShader.setVec3f("cam_pos", cam.position());
 		tempShader.setMat4f("model", cube.get_model());
-		tempShader.setMat4f("normal_model", cube.get_normal_model());
-		//glm::mat4 temp_view = glm::rotate(cam.view(), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		tempShader.setMat3f("normal_model", cube.get_normal_model());
 		tempShader.setMat4f("view", cam.view());
 		tempShader.setMat4f("projection", projection);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
 		cube.draw(tempShader);
-		//tempShader.setMat4f("model", model);
-		//cube.draw(tempShader);
 		tempShader.setMat4f("model", plane.get_model());
 		tempShader.setMat4f("normal_model", plane.get_normal_model());
 		plane.draw(tempShader);
 		tempShader.setMat4f("model", model);
 		//temp_model.draw(tempShader);
 
+		vector_shader.use();
+		vector_shader.setMat4f("model", cube.get_model());
+		vector_shader.setMat4f("view", cam.view());
+		vector_shader.setMat4f("projection", projection);
+		cube.draw(vector_shader);
+		vector_shader.setMat4f("model", plane.get_model());
+		plane.draw(vector_shader);
+		
+		
+		light_shader.use();
+		light_shader.setMat4f("model", light_cube.get_model());
+		light_shader.setMat3f("normal_model", light_cube.get_normal_model());
+		light_shader.setMat4f("view", cam.view());
+		light_shader.setMat4f("projection", projection);
+		light_cube.draw(light_shader);
+		
 		skybox_shader.use();
 		skybox_shader.setMat4f("projection", projection);
 		skybox_shader.setMat4f("view", glm::mat4(glm::mat3(cam.view())));
@@ -260,9 +392,6 @@ int main(int argc, char* argv[])
 		tempShader.setMat4f("model", plane.get_model());
 		plane.draw(tempShader);
 		*/
-
-		
-		
 		// glDisable(GL_DEPTH_TEST | GL_STENCIL_TEST);
 		// screen_shader.use();
 		//glBindVertexArray(quadVAO);
@@ -360,7 +489,7 @@ GLFWwindow* init()
 	// 设置使用core model
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	// 创建窗口
-	GLFWwindow* window = glfwCreateWindow(screen_width, screen_height, "learnOpenGL", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(screen_width + shadow_width, screen_height, "learnOpenGL", nullptr, nullptr);
 	// 检查窗口是否创建成功
 	if (window == nullptr)
 	{

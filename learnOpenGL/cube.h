@@ -12,7 +12,7 @@ public:
 	void rotate(const float angle, const glm::vec3 axis);
 	void add_texture(const char* path, std::string type_name);
 	glm::mat4 get_model() const;
-	glm::mat4 get_normal_model() const;
+	glm::mat3 get_normal_model() const;
 
 private:
 	Mesh mesh;
@@ -122,9 +122,9 @@ inline glm::mat4 Cube::get_model() const
 {
 	return model_mat;
 }
-inline glm::mat4 Cube::get_normal_model() const
+inline glm::mat3 Cube::get_normal_model() const
 {
-	return glm::transpose(glm::inverse(model_mat));
+	return glm::mat4(1.0f) * glm::transpose(glm::inverse(model_mat));
 }
 
 #endif

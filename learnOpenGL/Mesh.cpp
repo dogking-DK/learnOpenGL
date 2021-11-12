@@ -43,6 +43,7 @@ void Mesh::draw(Shader& shader)
 	unsigned int diffuse_num = 1;
 	unsigned int specular_num = 1;
 	//std::cout << "shading one--------------------\n";
+	//std::cout << textures.size() << std::endl;
 	for (unsigned int i = 0; i < textures.size(); ++i)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -62,7 +63,9 @@ void Mesh::draw(Shader& shader)
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 	//std::cout << "shading one--------------------\n";
-
+	glActiveTexture(GL_TEXTURE2);
+	shader.setInt("shadowMap", 3);
+	glBindTexture(GL_TEXTURE_2D, 6);
 	// ÖØÖÃÆôÓÃµÄÌùÍ¼
 	glActiveTexture(GL_TEXTURE0);
 

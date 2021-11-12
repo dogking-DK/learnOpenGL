@@ -25,6 +25,9 @@
     <Filter Include="shader\fs">
       <UniqueIdentifier>{d14abb68-779c-43fd-b6d9-ca8f947b78cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shader\gs">
+      <UniqueIdentifier>{bf148609-08a5-409b-bd92-ced44f42f637}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -123,6 +126,33 @@
     </None>
     <None Include="shader\main.fs">
       <Filter>shader\fs</Filter>
+    </None>
+    <None Include="shader\light.fs">
+      <Filter>shader\fs</Filter>
+    </None>
+    <None Include="shader\light.vs">
+      <Filter>shader\vs</Filter>
+    </None>
+    <None Include="shader\vector.vs">
+      <Filter>shader\vs</Filter>
+    </None>
+    <None Include="shader\vector.gs">
+      <Filter>shader\gs</Filter>
+    </None>
+    <None Include="shader\vector.fs">
+      <Filter>shader\fs</Filter>
+    </None>
+    <None Include="shader\shadow.fs">
+      <Filter>shader\fs</Filter>
+    </None>
+    <None Include="shader\shadow.vs">
+      <Filter>shader\vs</Filter>
+    </None>
+    <None Include="shader\shadow_depth.fs">
+      <Filter>shader\fs</Filter>
+    </None>
+    <None Include="shader\shadow_depth.vs">
+      <Filter>shader\vs</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
