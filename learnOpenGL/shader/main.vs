@@ -20,7 +20,9 @@ void main()
 {
     TexCoords = aTexCoords;   
     FragPos = vec3(model *vec4(aPos, 1.0));
-    Normal = aNormal;
+    Normal = (transpose(inverse(model)) * vec4(aNormal, 0.0)).xyz;
+    // Normal = normal_model * aNormal;
+    // Normal = aNormal;
     FragPosLightSpace = lightSpaceMatrix * vec4(FragPos, 1.0);
     gl_Position = projection * view * vec4(FragPos, 1.0);
 }

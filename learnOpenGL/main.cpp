@@ -86,18 +86,36 @@ int main()
 	//cube.add_texture("texture/white.jpg", "texture_specular");
 	//cube.move(glm::vec3(2.0f, 2.0f, 2.0f));
 	//cube.scale(glm::vec3(10));
+	Cube cube2;
+	cube2.add_texture("texture/metal_scratched/Metal_scratched_008_basecolor.jpg", "texture_diffuse");
+	cube2.add_texture("texture/metal_scratched/Metal_scratched_008_ambientOcclusion.jpg", "texture_specular");
+	cube2.move(glm::vec3(3.5f, 2.0f, 3.0f));
+	cube2.rotate(90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+
 	Plane plane;
 	plane.add_texture("texture/terracotta_tiles/Terracotta_Tiles_006_basecolor.jpg", "texture_diffuse");
 	//plane.add_texture("texture/grey_75.jpg", "texture_diffuse");
 	plane.add_texture("texture/terracotta_tiles/Terracotta_Tiles_006_ambientOcclusion.jpg", "texture_specular");
 	//plane.add_texture("texture/white.jpg", "texture_specular");
-	plane.move(glm::vec3(0.0, -1.0, 0.0));
-	plane.scale(glm::vec3(10.0, 20.0, 10.0));
+	cout << "init:\n";
+	print_mat4(plane.get_model());
+	cout << endl;
+	print_mat4(plane.get_normal_model());
+	plane.move(glm::vec3(0.0, -2.0, 0.0));
+	cout << "init:\n";
+	print_mat4(plane.get_model());
+	cout << endl;
+	print_mat4(plane.get_normal_model());
+	plane.scale(glm::vec3(25.0));
+	cout << "init:\n";
+	print_mat4(plane.get_model());
+	cout << endl;
+	print_mat4(plane.get_normal_model());
 	Plane screen_plane;
 	screen_plane.rotate(90, glm::vec3(1.0f, 0.0f, 0.0f));
 	DirectionalLight light(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.3f), glm::vec3(0.4f), glm::vec3(0.4f));
-	PointLight point_light(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.4f), glm::vec3(0.4f), glm::vec3(0.4f), 9);
-	SpotLight spot_light(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(-1.0, -1.0, -1.0),glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f));
+	PointLight point_light(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.7f), glm::vec3(0.7f), glm::vec3(0.7f), 9);
+	SpotLight spot_light(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(-1.0, -1.0, -1.0),glm::vec3(0.3f), glm::vec3(1.0f), glm::vec3(1.0f));
 	
 	cout << "---------------------spot light-----------------\n";
 	cout << spot_light.cutoff << endl;
@@ -191,9 +209,10 @@ int main()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadow_width, shadow_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float border_color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
 	glDrawBuffer(GL_NONE);
@@ -242,6 +261,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		// ShadowMapÉú³É
+		glCullFace(GL_BACK);
 		shadow_shader.use();
 		shadow_shader.setMat4f("lightSpaceMatrix", lightMatrix);
 		glViewport(0, 0, shadow_width, shadow_height);
@@ -249,9 +269,12 @@ int main()
 		glClear(GL_DEPTH_BUFFER_BIT);
 		shadow_shader.setMat4f("model", cube.get_model());
 		cube.draw(shadow_shader);
+		shadow_shader.setMat4f("model", cube2.get_model());
+		cube2.draw(shadow_shader);
 		shadow_shader.setMat4f("model", plane.get_model());
 		plane.draw(shadow_shader);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glCullFace(GL_FRONT);
 
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -326,13 +349,12 @@ int main()
 		tempShader.setMat3f("normal_model", cube.get_normal_model());
 		tempShader.setMat4f("view", cam.view());
 		tempShader.setMat4f("projection", projection);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
 		cube.draw(tempShader);
+		tempShader.setMat4f("model", cube2.get_model());
+		tempShader.setMat3f("normal_model", cube2.get_normal_model());
+		cube2.draw(tempShader);
 		tempShader.setMat4f("model", plane.get_model());
-		tempShader.setMat4f("normal_model", plane.get_normal_model());
+		tempShader.setMat3f("normal_model", plane.get_normal_model());
 		plane.draw(tempShader);
 		tempShader.setMat4f("model", model);
 		//temp_model.draw(tempShader);
