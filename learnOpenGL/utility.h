@@ -28,4 +28,20 @@ inline void print_mat3(const glm::mat3& mat)
 		std::cout << std::endl;
 	}
 }
+inline void print_vec(const glm::vec3& vec)
+{
+	for (unsigned int i = 0; i < 3; ++i)
+	{
+		std::cout << std::setw(5) << std::setprecision(3) << vec[i] << " ";
+	}
+	std::cout << std::endl;
+}
+inline void print_vec(const glm::vec4& vec)
+{
+	for (unsigned int i = 0; i < 4; ++i)
+	{
+		std::cout << std::setw(5) << std::setprecision(3) << vec[i] << " ";
+	}
+	std::cout << std::endl;
+}
 #endif

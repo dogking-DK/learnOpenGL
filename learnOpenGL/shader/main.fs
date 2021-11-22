@@ -72,7 +72,9 @@ vec3 calcDirectionalLight(DirLight light, vec3 normal, vec3 viewDir)
 	vec3 diffuse = light.diffuse * diff * vec3(texture(material.texture_diffuse1, TexCoords));
 	vec3 specular = light.specular * spec * vec3(texture(material.texture_specular1, TexCoords));
 
-	return (ambient + diffuse + specular);
+	float shadow = calcShadow(FragPosLightSpace, normal, lightDir);
+
+	return (ambient + (1.0 - shadow) * (diffuse + specular));
 }
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 viewDir)
 {
@@ -113,6 +115,9 @@ vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 viewDir)
 	vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse1, TexCoords));
 	vec3 diffuse = light.diffuse * diff * vec3(texture(material.texture_diffuse1, TexCoords));
 	vec3 specular = light.specular * spec * vec3(texture(material.texture_specular1, TexCoords));
+
+	float shadow = calcShadow(FragPosLightSpace, normal, lightDir);
+
 	return intensity * (specular + diffuse);
 }
 

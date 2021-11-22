@@ -124,7 +124,9 @@ inline glm::mat4 Cube::get_model() const
 }
 inline glm::mat3 Cube::get_normal_model() const
 {
-	return glm::mat4(1.0f) * glm::transpose(glm::inverse(model_mat));
+	glm::mat3 temp = glm::mat4(1.0f) * glm::transpose(glm::inverse(model_mat));
+	return temp / glm::determinant(temp);
+	return  glm::mat4(1.0f) * glm::transpose(glm::inverse(model_mat));
 }
 
 #endif

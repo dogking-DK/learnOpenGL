@@ -97,20 +97,10 @@ int main()
 	//plane.add_texture("texture/grey_75.jpg", "texture_diffuse");
 	plane.add_texture("texture/terracotta_tiles/Terracotta_Tiles_006_ambientOcclusion.jpg", "texture_specular");
 	//plane.add_texture("texture/white.jpg", "texture_specular");
-	cout << "init:\n";
-	print_mat4(plane.get_model());
-	cout << endl;
-	print_mat4(plane.get_normal_model());
 	plane.move(glm::vec3(0.0, -2.0, 0.0));
-	cout << "init:\n";
-	print_mat4(plane.get_model());
-	cout << endl;
-	print_mat4(plane.get_normal_model());
 	plane.scale(glm::vec3(25.0));
-	cout << "init:\n";
-	print_mat4(plane.get_model());
-	cout << endl;
-	print_mat4(plane.get_normal_model());
+	plane.rotate(60.0f, glm::vec3(0.0, 1.0, 0.0));
+
 	Plane screen_plane;
 	screen_plane.rotate(90, glm::vec3(1.0f, 0.0f, 0.0f));
 	DirectionalLight light(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.3f), glm::vec3(0.4f), glm::vec3(0.4f));
@@ -121,13 +111,6 @@ int main()
 	cout << spot_light.cutoff << endl;
 	cout << spot_light.outer_cutoff << endl;
 	cout << "---------------------spot light-----------------\n";
-
-	
-	cout << "model mat\n";
-	print_mat4(cube.get_model());
-	print_mat4(glm::inverse(cube.get_model()));
-	print_mat4(glm::transpose(glm::inverse(cube.get_model())));
-	print_mat4(glm::mat4(1.0) * glm::transpose(glm::inverse(cube.get_model())));
 	
 	Cube light_cube;
 	light_cube.move(spot_light.position);
@@ -259,6 +242,9 @@ int main()
 		// 进行渲染更新
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		cube2.rotate(0.1f, glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
+		cube.rotate(-0.1f, glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
 
 		// ShadowMap生成
 		glCullFace(GL_BACK);
