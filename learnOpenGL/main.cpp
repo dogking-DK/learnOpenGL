@@ -89,7 +89,7 @@ int main()
 	Cube cube2;
 	cube2.add_texture("texture/metal_scratched/Metal_scratched_008_basecolor.jpg", "texture_diffuse");
 	cube2.add_texture("texture/metal_scratched/Metal_scratched_008_ambientOcclusion.jpg", "texture_specular");
-	cube2.move(glm::vec3(3.5f, 2.0f, 3.0f));
+	cube2.move(glm::vec3(2.0f, 2.0f, 2.0f));
 	cube2.rotate(90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	Plane plane;
@@ -104,7 +104,7 @@ int main()
 	Plane screen_plane;
 	screen_plane.rotate(90, glm::vec3(1.0f, 0.0f, 0.0f));
 	DirectionalLight light(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.3f), glm::vec3(0.4f), glm::vec3(0.4f));
-	PointLight point_light(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.7f), glm::vec3(0.7f), glm::vec3(0.7f), 9);
+	PointLight point_light(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.2f), glm::vec3(0.8f), glm::vec3(0.7f), 9);
 	SpotLight spot_light(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(-1.0, -1.0, -1.0),glm::vec3(0.3f), glm::vec3(1.0f), glm::vec3(1.0f));
 	
 	cout << "---------------------spot light-----------------\n";
@@ -204,7 +204,8 @@ int main()
 
 	float near_plane = 1.0f;
 	float far_plane = 25.0f;
-	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+	//glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+	glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
 	glm::mat4 lightView = glm::lookAt(point_light.position - glm::vec3(0.0f, 0.0f, 0.0f), point_light.position + light.direction, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightMatrix = lightProjection * lightView;
 	unsigned int showAVO, showBVO;
@@ -243,11 +244,11 @@ int main()
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		cube2.rotate(0.1f, glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
-		cube.rotate(-0.1f, glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
+		//cube2.rotate(0.1f, glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
+		//cube.rotate(-0.1f, glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
 
 		// ShadowMapÉú³É
-		glCullFace(GL_BACK);
+		//glCullFace(GL_BACK);
 		shadow_shader.use();
 		shadow_shader.setMat4f("lightSpaceMatrix", lightMatrix);
 		glViewport(0, 0, shadow_width, shadow_height);
