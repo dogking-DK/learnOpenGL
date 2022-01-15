@@ -1,5 +1,3 @@
-#include <iomanip>
-
 #include "header_collection.h"
 // 是否使用线框渲染模式
 //#define __USE_LINE_MODE__
@@ -33,6 +31,7 @@ int fps = 0;
 double second_start;
 double second_end;
 double last_time;
+const double FPS = 2000.0;
 float vis_degree = 0.2f;
 bool first_mouse = true;
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -84,13 +83,13 @@ int main()
 	//cube.add_texture("texture/grey.jpg", "texture_diffuse");
 	cube.add_texture("texture/container_spec.png", "texture_specular");
 	//cube.add_texture("texture/white.jpg", "texture_specular");
-	//cube.move(glm::vec3(2.0f, 2.0f, 2.0f));
+	cube.move(glm::vec3(2.0f, 2.0f, 5.0f));
 	//cube.scale(glm::vec3(10));
 	Cube cube2;
 	cube2.add_texture("texture/metal_scratched/Metal_scratched_008_basecolor.jpg", "texture_diffuse");
 	cube2.add_texture("texture/metal_scratched/Metal_scratched_008_ambientOcclusion.jpg", "texture_specular");
-	cube2.move(glm::vec3(2.0f, 2.0f, 2.0f));
-	cube2.rotate(90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	cube2.move(glm::vec3(3.0f, -1.0f, 3.0f));
+	cube2.rotate(45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	Plane plane;
 	plane.add_texture("texture/terracotta_tiles/Terracotta_Tiles_006_basecolor.jpg", "texture_diffuse");
@@ -105,7 +104,7 @@ int main()
 	screen_plane.rotate(90, glm::vec3(1.0f, 0.0f, 0.0f));
 	DirectionalLight light(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.3f), glm::vec3(0.4f), glm::vec3(0.4f));
 	PointLight point_light(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.2f), glm::vec3(0.8f), glm::vec3(0.7f), 9);
-	SpotLight spot_light(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(-1.0, -1.0, -1.0),glm::vec3(0.3f), glm::vec3(1.0f), glm::vec3(1.0f));
+	SpotLight spot_light(glm::vec3(5.0f, 2.0f, 5.0f), glm::vec3(-1.0, -1.0, -1.0),glm::vec3(0.3f), glm::vec3(1.0f), glm::vec3(1.0f));
 	
 	cout << "---------------------spot light-----------------\n";
 	cout << spot_light.cutoff << endl;
@@ -113,7 +112,7 @@ int main()
 	cout << "---------------------spot light-----------------\n";
 	
 	Cube light_cube;
-	light_cube.move(spot_light.position);
+	light_cube.move(point_light.position);
 	light_cube.scale(glm::vec3(0.1f));
 	// 位移矩阵
 	glm::mat4 model = glm::mat4(1.0f);
@@ -203,7 +202,7 @@ int main()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	float near_plane = 1.0f;
-	float far_plane = 25.0f;
+	float far_plane = 50.0f;
 	//glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
 	glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
 	glm::mat4 lightView = glm::lookAt(point_light.position - glm::vec3(0.0f, 0.0f, 0.0f), point_light.position + light.direction, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -235,18 +234,18 @@ int main()
 	{
 		// 检测输入
 		processInput(window);
-		
+
 		//glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glEnable(GL_DEPTH_TEST);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-		
+
 		// 进行渲染更新
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		//cube2.rotate(0.1f, glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
 		//cube.rotate(-0.1f, glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
-
+		//cube2.move(glm::vec3(-sin(glfwGetTime()) * 0.002, sin(glfwGetTime()) * 0.002, -sin(glfwGetTime()) * 0.002));
 		// ShadowMap生成
 		//glCullFace(GL_BACK);
 		shadow_shader.use();
@@ -275,9 +274,9 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindVertexArray(0);
-		
+
 		glViewport(0, 0, screen_width, screen_height);
-		
+
 		glm::mat4 temp_view = glm::rotate(cam.view(), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		projection = glm::perspective(glm::radians(fov), static_cast<float>(screen_width) / static_cast<float>(screen_height), 0.1f, 100.0f);
 		/*
@@ -288,7 +287,7 @@ int main()
 		glm::vec3 diffuseColor = light_vec * glm::vec3(0.5f); // decrease the influence
 		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.5f); // low influence
 		glm::vec3 specularColor = glm::vec3(1.0f, 1.0f, 1.0f); // low influence
-		
+
 		lightShader.use();
 		model = glm::mat4(1.0);
 		//model = glm::rotate(model, glm::radians(static_cast<float>(glfwGetTime() * 100.0)), glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -306,8 +305,8 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
 		glm::mat4 rot_position = glm::rotate(glm::mat4(1.0f), glm::radians(static_cast<float>(last_time / 360.0)), glm::vec3(0.0f, 1.0f, 0.0f));
-		
-		
+
+
 		tempShader.use();
 		tempShader.setVec3f("dir_light.direction", light.direction);
 		tempShader.setVec3f("dir_light.ambient", light.ambient);
@@ -353,44 +352,44 @@ int main()
 		cube.draw(vector_shader);
 		vector_shader.setMat4f("model", plane.get_model());
 		plane.draw(vector_shader);
-		
-		
+
+
 		light_shader.use();
 		light_shader.setMat4f("model", light_cube.get_model());
 		light_shader.setMat3f("normal_model", light_cube.get_normal_model());
 		light_shader.setMat4f("view", cam.view());
 		light_shader.setMat4f("projection", projection);
 		light_cube.draw(light_shader);
-		
+
 		skybox_shader.use();
 		skybox_shader.setMat4f("projection", projection);
 		skybox_shader.setMat4f("view", glm::mat4(glm::mat3(cam.view())));
 		skybox.draw(skybox_shader);
-		
-			/*
-			glStencilMask(0x00);
-			tempShader.setMat4f("model", plane.get_model());
-			plane.draw(tempShader);
 
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glStencilMask(0xFF);
-			tempShader.setMat4f("model", model);
-			cube.draw(tempShader);
+		/*
+		glStencilMask(0x00);
+		tempShader.setMat4f("model", plane.get_model());
+		plane.draw(tempShader);
 
-			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-			glStencilMask(0x00);
-			glDisable(GL_DEPTH_TEST);
-			colorShader.use();
-			colorShader.setMat4f("view", cam.view());
-			colorShader.setMat4f("projection", projection);
-			cube.scale(glm::vec3(1.25, 1.25, 1.25));
-			colorShader.setMat4f("model", cube.get_model());
-			cube.draw(colorShader);
-			cube.scale(glm::vec3(0.8, 0.8, 0.8));
-			glStencilMask(0xFF);
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glEnable(GL_DEPTH_TEST);
-			*/
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);
+		tempShader.setMat4f("model", model);
+		cube.draw(tempShader);
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00);
+		glDisable(GL_DEPTH_TEST);
+		colorShader.use();
+		colorShader.setMat4f("view", cam.view());
+		colorShader.setMat4f("projection", projection);
+		cube.scale(glm::vec3(1.25, 1.25, 1.25));
+		colorShader.setMat4f("model", cube.get_model());
+		cube.draw(colorShader);
+		cube.scale(glm::vec3(0.8, 0.8, 0.8));
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glEnable(GL_DEPTH_TEST);
+		*/
 		/*
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0);
@@ -408,21 +407,23 @@ int main()
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
 		// screen_shader.setMat4f("model", rear_mirror.get_model());
 		// rear_mirror.draw(screen_shader);
-		
+
 		// 更新画面，处理事件	
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		
+
 		// 测量FPS
 		last_time = second_end;
 		second_end = glfwGetTime();
 		++fps;
-		if(second_end - second_start >= 1.0)
+		if (second_end - second_start >= 1.0)
 		{
 			glfwSetWindowTitle(window, std::to_string(fps).c_str());
 			fps = 0;
 			second_start += 1.0;
 		}
+		while (glfwGetTime() < second_end + 1.0 / FPS) {}
+		
 		cam.update_camera_speed(static_cast<float>(second_end - last_time));
 	}
 

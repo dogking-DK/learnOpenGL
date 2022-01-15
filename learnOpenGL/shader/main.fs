@@ -3,7 +3,7 @@
 #define SAMPLE_NUM 25
 #define PI 3.14159265359
 #define PI2 6.28318530718
-#define BIAS 0.005
+#define BIAS 0.0005
 struct DirLight
 {
 	vec3 direction;
@@ -36,6 +36,7 @@ struct SpotLight
 	float cutoff;
 	float outer_cutoff;
 };
+
 struct Material
 {
 	sampler2D texture_diffuse1;	
@@ -75,7 +76,6 @@ uniform SpotLight spot_light;			// 测试用光
 
 vec2 circle_samples[SAMPLE_NUM];
 float bias = 0.0;
-
 // 随机数生成器
 float rand(float seed)
 {
@@ -166,6 +166,7 @@ vec3 calcPointLight(PointLight light, vec3 normal, vec3 viewDir)
 
 	float shadow = PCSS(FragPosLightSpace, normal, lightDir);
 	// float shadow = ShadowCalculation(FragPosLightSpace);
+	// float shadow = calcShadow(FragPosLightSpace, normal, lightDir);
 	// return vec3(1.0 - shadow);
 	return attenuation * (ambient + (1.0 - shadow) * (diffuse + specular));
 }
@@ -207,9 +208,7 @@ void main()
 	
 }
 
-float w_penumbra(float d_receiver, float d_blocker, float w_light) {
-    return (d_receiver - d_blocker) * w_light/ d_blocker;
-}
+
 float search_block(vec2 loc, float cur_depth)
 {
 	float block_depth = 0.0;
@@ -231,7 +230,38 @@ float search_block(vec2 loc, float cur_depth)
 
 	return block_depth / valid_depth_count;
 }
+float PCSS(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
+{
+	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+	projCoords = projCoords * 0.5 + 0.5;
+	
+	float currentDepth = projCoords.z;
+    bias = max(0.002 * (1.0 - dot(normal, lightDir)), 0.0001);
 
+	float blockDepth = search_block(projCoords.xy, currentDepth);
+	// float blockDepth = avg_block_depth(fragPosLightSpace, 0.1);
+	if (blockDepth < bias || currentDepth > 1.0)
+		return 0.0;
+
+	// return blockDepth;
+	// 获得伴影大小
+	float penumbra = 0.1 * (currentDepth - blockDepth) / blockDepth;
+	
+	// return penumbra;
+
+	float temp_depth = 0.0;
+	float depth = 0.0;
+	for (uint i = 0; i < SAMPLE_NUM; ++i)
+	{
+		temp_depth = texture(shadowMap, projCoords.xy + circle_samples[i] * 0.1).r;
+		// depth += temp_depth;
+		if (currentDepth - bias > temp_depth)
+			depth += 1.0;
+	}
+	
+
+	return depth / SAMPLE_NUM;
+}
 float calcShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 {
 	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -248,6 +278,10 @@ float calcShadow(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 	return shadow;
 }
 
+// ---------------------------from internet----------------------------
+float w_penumbra(float d_receiver, float d_blocker, float w_light) {
+    return (d_receiver - d_blocker) * w_light/ d_blocker;
+}
 float avg_block_depth(vec4 FragLightSpace, float w_light){
     int sampleCount = 8;
     float blockerSum = 0;
@@ -360,35 +394,5 @@ float ShadowCalculation(vec4 FragLightSpace)
         
     return shadow;
 }
-float PCSS(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
-{
-	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-	projCoords = projCoords * 0.5 + 0.5;
-	
-	float currentDepth = projCoords.z;
-    bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.001);
+// ---------------------------from internet----------------------------
 
-	float blockDepth = search_block(projCoords.xy, currentDepth);
-	//float blockDepth = avg_block_depth(fragPosLightSpace, 0.1);
-	if (blockDepth < bias || currentDepth > 1.0)
-		return 0.0;
-
-	// return blockDepth;
-	// 获得伴影大小
-	float penumbra = 0.1 * (currentDepth - blockDepth) / blockDepth;
-	
-	// return penumbra;
-
-	float temp_depth = 0.0;
-	float depth = 0.0;
-	for (uint i = 0; i < SAMPLE_NUM; ++i)
-	{
-		temp_depth = texture(shadowMap, projCoords.xy + circle_samples[i] * 0.1).r;
-		// depth += temp_depth;
-		if (currentDepth - bias > temp_depth)
-			depth += 1.0;
-	}
-	
-
-	return depth / SAMPLE_NUM;
-}
